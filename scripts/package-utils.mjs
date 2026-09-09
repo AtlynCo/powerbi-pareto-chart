@@ -4,11 +4,10 @@ import { createHash } from "node:crypto";
 import { unzipSync, strFromU8 } from "fflate";
 import assert from "node:assert/strict";
 
-export function readPackage() {
+export function readPackage(packagePath) {
     const metadata = JSON.parse(fs.readFileSync("pbiviz.json", "utf8"));
-    const files = fs.readdirSync("dist").filter(file => file.endsWith(".pbiviz"));
-    assert.equal(files.length, 1, "Expected exactly one .pbiviz package in dist");
-    const filename = path.resolve("dist", files[0]);
+    const filename = path.resolve(packagePath ?? path.join("dist", `${metadata.visual.guid}.${metadata.visual.version}.pbiviz`));
+    assert.ok(fs.existsSync(filename), `Build the current package first: ${filename}`);
     const bytes = fs.readFileSync(filename);
     const entries = unzipSync(bytes);
     const resourceFiles = Object.keys(entries).filter(name => name.endsWith(".pbiviz.json"));
@@ -21,7 +20,8 @@ export function readPackage() {
 export function validatePackage(result) {
     const { metadata, payload, entries, manifest } = result;
     assert.equal(payload.visual.guid, "atlynPareto18722664651549C392ABF6B1EBA46945");
-    assert.equal(payload.visual.version, "1.0.0.0");
+    assert.equal(payload.visual.version, "1.1.0.0");
+    assert.equal(payload.visual.version, metadata.visual.version);
     assert.equal(payload.visual.displayName, "Atlyn Pareto");
     assert.equal(payload.apiVersion, "5.11.0");
     assert.equal(payload.apiVersion, metadata.apiVersion);

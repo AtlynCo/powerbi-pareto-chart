@@ -10,11 +10,12 @@ test("loads the distributed plugin and exposes cold and customized formatting ca
         "analysis.threshold": 80,
         "analysis.partialPolicy": "withhold",
         "analysis.pageSize": 30,
+        "analysis.startRank": 1,
         "appearance.fontSize": 12,
         "appearance.showTable": true
     });
     expect(Object.keys(cold).sort()).toEqual([
-        "analysis.pageSize", "analysis.partialPolicy", "analysis.threshold",
+        "analysis.pageSize", "analysis.partialPolicy", "analysis.startRank", "analysis.threshold",
         "appearance.barColor", "appearance.fontSize", "appearance.lineColor",
         "appearance.showTable", "appearance.thresholdColor"
     ]);
@@ -40,7 +41,7 @@ test("loads the distributed plugin and exposes cold and customized formatting ca
     await expect(page.locator(".contribution-bar").first()).toHaveAttribute("fill", "#445566");
     await expect(page.locator(".contribution-bar").last()).toHaveAttribute("fill", "#112233");
     await expect(page.locator(".cumulative-line")).toHaveAttribute("stroke", "#778899");
-    await expect(page.locator(".threshold-summary")).toHaveText("50% threshold; 1 of 3 categories included, including all boundary ties.");
+    await expect(page.locator(".threshold-summary")).toHaveText("50% threshold · 1 of 3 categories");
 });
 
 test("packaged third-party notices expand offline and retain upstream copyright and permission text", async ({ app, page }) => {
@@ -67,7 +68,7 @@ test("packaged third-party notices expand offline and retain upstream copyright 
 
 test("complete contributions use descending bars, separate percent axis, and full-denominator cumulative points", async ({ app, page }) => {
     await app.update(threeRows());
-    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Complete);
+    await expect(page.locator(".universe")).toHaveText("Completed query · 3 categories");
     await expect(page.locator(".total")).toHaveText("Denominator total: $100.00");
     expect(await tableRows(page)).toEqual([
         ["1", "A", "$60.00", "$60.00", "60%", "Threshold contributor (ties included)"],
@@ -182,7 +183,7 @@ test("native selection, Ctrl multi-selection, clear, and incoming host selection
 test("keyboard tab and roving arrows select bars and open the host context menu without duplicate bubbling", async ({ app, page }) => {
     await app.update(threeRows());
     const bars = page.locator(".bar-target");
-    await page.getByRole("button", { name: "Clear selection", exact: true }).focus();
+    await page.locator(".atlyn-pareto").focus();
     await page.keyboard.press("Tab");
     await expect(page.locator(".chart-scroll")).toBeFocused();
     await page.keyboard.press("Tab");
@@ -332,10 +333,10 @@ test.describe("host disables interactions", () => {
 
 test("resizing to a small tile and back preserves data and renders the explicit small state", async ({ app, page }) => {
     await app.update(threeRows());
-    await app.update(undefined, { type: 4, viewport: { width: 220, height: 150 } });
-    await expect(page.locator(".atlyn-pareto")).toHaveCSS("width", "220px");
-    await expect(page.locator(".atlyn-pareto")).toHaveCSS("height", "150px");
-    await expect(page.getByText(app.resources["en-US"].Small, { exact: true })).toBeVisible();
+    await app.update(undefined, { type: 4, viewport: { width: 80, height: 80 } });
+    await expect(page.locator(".atlyn-pareto")).toHaveCSS("width", "80px");
+    await expect(page.locator(".atlyn-pareto")).toHaveCSS("height", "80px");
+    await expect(page.locator(".atlyn-pareto")).toHaveAttribute("aria-label", new RegExp(app.resources["en-US"].Small.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
     await expect(page.locator("svg, .data-table")).toHaveCount(0);
     await app.update(undefined, { type: 4, viewport: { width: 600, height: 450 } });
     await expect(page.locator(".bar-target")).toHaveCount(3);
@@ -384,7 +385,7 @@ test("negative, missing, nonnumeric, nonfinite, and overflowing contributions wi
 test("partial data withholds shares by default, does not refetch on resize/style, and replaces aggregate append data", async ({ app, page }) => {
     const partial = categoricalView([60, 30], { labels: ["A", "B"], segmented: true });
     await app.update(partial);
-    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Withhold);
+    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].WithholdBrief);
     await expect(page.locator(".retrieval")).toHaveText(app.resources["en-US"].Loading);
     await expect(page.locator(".contribution-bar")).toHaveCount(2);
     await expect(page.locator(".total, .cumulative-line, .percent-axis-title, .threshold-line, .threshold-summary")).toHaveCount(0);
@@ -402,7 +403,7 @@ test("partial data withholds shares by default, does not refetch on resize/style
     expect((await app.state()).fetchRequests).toEqual([true]);
     await expect(page.locator(".atlyn-pareto")).toHaveCSS("font-size", "16px");
     await app.update(categoricalView([60, 30, 10], { labels: ["A", "B", "C"] }), { operationKind: 1 });
-    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Complete);
+    await expect(page.locator(".universe")).toHaveText("Completed query · 3 categories");
     await expect(page.locator(".total")).toHaveText("Denominator total: 100.00");
     await expect(page.locator(".contribution-bar")).toHaveCount(3);
     expect((await tableRows(page)).map(row => row[4])).toEqual(["60%", "90%", "100%"]);
@@ -415,7 +416,7 @@ test("partial data withholds shares by default, does not refetch on resize/style
 test("subset opt-in labels its partial denominator and aggregates additional host rows without double-counting", async ({ app, page }) => {
     const objects = { analysis: { partialPolicy: "subset" } };
     await app.update(categoricalView([60, 30], { segmented: true, objects }));
-    await expect(page.locator(".universe.warning")).toHaveText(app.resources["en-US"].Subset);
+    await expect(page.locator(".universe.warning")).toHaveText(app.resources["en-US"].SubsetBrief);
     await expect(page.locator(".total")).toHaveText("Denominator total: 90.00");
     expect((await tableRows(page)).map(row => row[4])).toEqual(["66.67%", "100%"]);
     await app.update(categoricalView([60, 30, 10], { segmented: true, objects }), { operationKind: 1 });
@@ -423,7 +424,7 @@ test("subset opt-in labels its partial denominator and aggregates additional hos
     expect((await tableRows(page)).map(row => row[4])).toEqual(["60%", "90%", "100%"]);
     expect((await app.state()).fetchRequests).toEqual([true, true]);
     await app.update(categoricalView([60, 30, 10], { objects }), { operationKind: 1 });
-    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Complete);
+    await expect(page.locator(".universe")).toHaveText("Completed query · 3 categories");
     await expect(page.locator(".retrieval")).toHaveCount(0);
     await expect(page.locator(".total")).toHaveText("Denominator total: 100.00");
     expect((await app.state()).fetchRequests).toEqual([true, true]);
@@ -446,7 +447,7 @@ test.describe("host does not implement fetchMoreData", () => {
         const partial = categoricalView([60, 30], { segmented: true });
         await app.update(partial);
         await expect(page.locator(".retrieval")).toHaveText(app.resources["en-US"].Refused);
-        await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Withhold);
+        await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].WithholdBrief);
         await expect(page.getByRole("alert")).toHaveCount(0);
         await expect(page.locator(".contribution-bar")).toHaveCount(2);
         await expect(page.locator(".cumulative-line, .total")).toHaveCount(0);
@@ -465,7 +466,7 @@ test("stalled aggregate and unexpected incremental segments stop fetching until 
     expect((await app.state()).fetchRequests).toEqual([true]);
     await app.update(categoricalView([10], { segmented: true }), { operationKind: 2 });
     await expect(page.locator(".retrieval")).toHaveText(app.resources["en-US"].Unexpected);
-    await expect(page.locator(".counts")).toHaveText("1 categories analyzed; 1 rows received.");
+    await expect(page.locator(".counts")).toHaveText("Within the analysis bound: 1 categories; 1 rows received.");
     await expect(page.locator(".cumulative-line, .total")).toHaveCount(0);
     expect((await app.state()).fetchRequests).toEqual([true]);
     await app.update(partial);
@@ -477,16 +478,16 @@ test("100,000-category boundary stops fetching and excludes rows beyond the hard
     test.setTimeout(120_000);
     await app.update(categoricalView(Array(100_000).fill(1), { segmented: true }));
     await expect(page.locator(".retrieval")).toHaveText(app.resources["en-US"].Limit);
-    await expect(page.locator(".counts")).toHaveText("100,000 categories analyzed; 100,000 rows received.");
-    await expect(page.locator(".contribution-bar")).toHaveCount(30);
+    await expect(page.locator(".counts")).toHaveText("Within the analysis bound: 100,000 categories; 100,000 rows received.");
+    await expect(page.locator(".contribution-bar")).toHaveCount(12);
     await expect(page.locator(".cumulative-line, .total")).toHaveCount(0);
     expect((await app.state()).fetchRequests).toEqual([]);
     await app.update(categoricalView([...Array(100_000).fill(1), 1_000_000], {
         objects: { analysis: { partialPolicy: "subset", pageSize: 10 } }
     }));
     await expect(page.locator(".retrieval")).toHaveText(app.resources["en-US"].Limit);
-    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Subset);
-    await expect(page.locator(".counts")).toHaveText("100,000 categories analyzed; 100,001 rows received.");
+    await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].SubsetBrief);
+    await expect(page.locator(".counts")).toHaveText("Within the analysis bound: 100,000 categories; 100,001 rows received.");
     await expect(page.locator(".total")).toHaveText("Denominator total: 100,000.00");
     await expect(page.locator(".contribution-bar")).toHaveCount(10);
     expect((await tableRows(page))[0][2]).toBe("1.00");
@@ -501,10 +502,10 @@ test("rank pagination preserves global cumulative values, denominator, and selec
     await expect(page.locator(".total")).toHaveText("Denominator total: 325.00");
     await expect(page.getByRole("button", { name: "Previous ranks", exact: true })).toBeDisabled();
     await page.getByRole("button", { name: "Next ranks", exact: true }).click();
-    await expect(page.locator(".page-label")).toHaveText("Ranks 11-20 of 25. Cumulative values include earlier pages.");
+    await expect(page.locator(".page-label")).toHaveText("11–20 / 25");
     expect((await tableRows(page))[0].slice(0, 5)).toEqual(["11", "Category 10", "15.00", "220.00", "67.69%"]);
     await expect(page.locator(".bar-target").first()).toBeFocused();
-    const firstPointShare = await page.locator("svg").evaluate(node => {
+    const firstPointShare = await page.locator(".chart-scroll svg").evaluate(node => {
         const baseline = Number(node.querySelector(".value-tick")!.getAttribute("y")) - 4;
         const top = Number(node.querySelectorAll(".percent-tick")[4].getAttribute("y")) - 4;
         const firstY = Number(node.querySelector(".cumulative-point, .crossing-point")!.getAttribute("cy"));
@@ -557,7 +558,7 @@ test.describe("French packaged resources", () => {
     test.use({ hostOptions: { locale: "fr-FR" } });
     test("localizes UI, formatting cards, numeric model formats, and host tooltip labels", async ({ app, page }) => {
         await app.update(categoricalView([1000, 250.5], { labels: ["A", "B"] }));
-        await expect(page.locator(".universe")).toHaveText(app.resources["fr-FR"].Complete);
+        await expect(page.locator(".universe")).toHaveText("Requête terminée · 2 catégories");
         await expect(page.locator(".total")).toHaveText(/Total du dénominateur: 1[\u00a0\u202f ]250,50/);
         await expect(page.getByRole("button", { name: "Effacer la sélection", exact: true })).toBeVisible();
         await expect(page.locator(".atlyn-pareto")).toHaveAttribute("dir", "ltr");
@@ -577,7 +578,7 @@ test.describe("Arabic host locale with English resource fallback", () => {
         await expect(page.locator(".atlyn-pareto")).toHaveAttribute("dir", "rtl");
         await expect(page.locator(".atlyn-pareto")).toHaveCSS("direction", "rtl");
         await expect(page.locator(".chart-scroll")).toHaveCSS("direction", "ltr");
-        await expect(page.locator(".universe")).toHaveText(app.resources["en-US"].Complete);
+        await expect(page.locator(".universe")).toHaveText("Completed query · ٣ categories");
         await expect(page.getByRole("button", { name: "Clear selection", exact: true })).toBeVisible();
         const expected = new Intl.NumberFormat("ar-SA", { style: "percent", maximumFractionDigits: 2 }).format(0.6);
         expect((await tableRows(page))[0][4]).toBe(expected);

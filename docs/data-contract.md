@@ -23,6 +23,8 @@ The visual does not implement multiple category levels, drill-down, decompositio
 
 “Analyze received subset” relaxes the completeness requirement only. It does **not** allow an invalid contribution to be silently omitted.
 
+The ranking/identity safety bound does not hide known invalid values in a larger received view: all received contribution values are checked, including the tail beyond 100,000 categories. Any known invalid tail rejects the analysis. Categories not delivered by the host cannot be inspected; their validity and total remain unknown.
+
 ## Ranking and threshold
 
 Rows sort by:
@@ -61,7 +63,11 @@ When comparing reports, record the filters, received category count, completenes
 
 ## Pagination and highlights
 
-Page size is 10–100 categories, default 30. Every rank is available through pagination. All analyzed rows contribute to the denominator, cumulative totals, first crossing, and boundary ties, including rows on other pages. A page is not a separate Pareto analysis and does not restart cumulative share at zero.
+The **maximum** page size is 10-100 categories, default 30. Actual pages adapt to tile width, font size, and long category labels; wide charts reserve more space for long labels. All ranks remain available through Previous/Next, **Go to rank**, and **Show threshold**. All analyzed rows contribute to the denominator, cumulative totals, first crossing, and boundary ties, including rows on other pages. A page is not a separate Pareto analysis and does not restart cumulative share at zero.
+
+Wide tiles with more than one page show a small all-analyzed-ranks cumulative overview. It samples at most one point per horizontal pixel for presentation; it neither changes the underlying arithmetic nor introduces Other buckets. The threshold marker uses the exact first-crossing rank. Read the ranked table for exact values.
+
+The rank position is persisted through Power BI's formatting-object API as `analysis.startRank`; replayed settings/bookmark metadata restores it, clamped to the current filtered universe. This is locally tested using host mocks, not proof of native bookmark behavior. Resizing and formatting-only updates reuse cached data and identities, without refetching or reranking unless the threshold changes.
 
 Incoming highlights are overlays on the original contributions. They do not change the original ranking, denominator, or threshold membership. Host **cross-filtering** is different: it can send a new query universe, which must be analyzed anew. Host selection state is reflected in the chart/table without locally recomputing a selected-only denominator.
 
@@ -71,6 +77,8 @@ The visual declares `supportsMultiVisualSelection: true` and uses the host selec
 
 ## Presentation and accessibility
 
-The chart and table communicate rank, value, share, cumulative share, and threshold membership when those quantities are defined. Retain the data table for a non-chart reading path. Measure/category formatting follows host format strings and locale; localized visual strings are supplied for en-US and fr-FR. RTL layout and high contrast are supported presentation paths, not evidence that every language or assistive technology has been validated.
+The chart and table communicate rank, value, share, cumulative share, and threshold membership when those quantities are defined. Retain the data table for a non-chart reading path. Full category names remain in the table, native tooltips and accessible labels; chart labels use up to two shortened lines without splitting Unicode graphemes. Essential totals/universe state and the chart precede optional explanatory details. Tiles below 160 px wide or 140 px high show a compact state/total rather than an illegible chart.
+
+Tooltips and table values retain model formats and locale. Axes use compact/scientific numeric labels when the full model-formatted label cannot fit or would incorrectly round a nonzero tick to zero; consult the bound measure name and model-formatted tooltip for units. Compact tiles use 10-pixel chart labels; the full chart and data table use the text-size setting. Large text increases label spacing and reduces tick/page density rather than overlapping ranks and labels. Zero in persisted threshold metadata is normalized to the supported 1% minimum and the format pane reflects that normalization. Invalid/out-of-range numeric settings use documented defaults/bounds; unsupported completeness-policy values revert to withholding. Localized visual strings are supplied for en-US and fr-FR. RTL layout and high contrast are presentation paths, not evidence that every language or assistive technology has been validated.
 
 See [manual host validation](host-validation.md) for keyboard actions and the checks still required in real Power BI.

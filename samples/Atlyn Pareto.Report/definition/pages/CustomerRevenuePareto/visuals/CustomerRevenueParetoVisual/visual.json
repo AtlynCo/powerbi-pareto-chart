@@ -1,0 +1,97 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "CustomerRevenueParetoVisual",
+  "position": {
+    "x": 48,
+    "y": 48,
+    "z": 0,
+    "width": 1184,
+    "height": 624,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "atlynPareto18722664651549C392ABF6B1EBA46945",
+    "query": {
+      "isDrillDisabled": true,
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "CustomerRevenue"
+                    }
+                  },
+                  "Property": "Category"
+                }
+              },
+              "queryRef": "CustomerRevenue.Category"
+            }
+          ]
+        },
+        "Contribution": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "CustomerRevenue"
+                    }
+                  },
+                  "Property": "Total customer revenue"
+                }
+              },
+              "queryRef": "CustomerRevenue.Total customer revenue"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "CustomerRevenue"
+                    }
+                  },
+                  "Property": "Total invoices"
+                }
+              },
+              "queryRef": "CustomerRevenue.Total invoices"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "analysis": [
+        {
+          "properties": {
+            "threshold": { "expr": { "Literal": { "Value": "80D" } } },
+            "partialPolicy": { "expr": { "Literal": { "Value": "'withhold'" } } },
+            "pageSize": { "expr": { "Literal": { "Value": "30D" } } },
+            "startRank": { "expr": { "Literal": { "Value": "1D" } } }
+          }
+        }
+      ],
+      "appearance": [
+        {
+          "properties": {
+            "fontSize": { "expr": { "Literal": { "Value": "12D" } } },
+            "showTable": { "expr": { "Literal": { "Value": "true" } } }
+          }
+        }
+      ]
+    }
+  },
+  "annotations": [
+    {
+      "name": "binding",
+      "value": "Category=CustomerRevenue[Category]; Contribution=[Total customer revenue]; Tooltip=[Total invoices]"
+    }
+  ]
+}

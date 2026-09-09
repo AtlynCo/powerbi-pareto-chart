@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "files": [],
+  "include": ["tests/**/*.ts", "scripts/quality-evidence.mts", "playwright.config.ts"],
+  "exclude": ["node_modules", ".tmp"]
+}

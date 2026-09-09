@@ -9,11 +9,19 @@ export class SegmentTracker {
     private previousCount = 0;
     public status: Completeness = "complete";
 
+    public reset(): void {
+        this.previousCount = 0;
+        this.status = "complete";
+    }
+
     public accept(count: number, segmented: boolean, operation: number | undefined, requestMore: () => boolean): Completeness {
         const appended = operation === 1;
         const previous = this.previousCount;
         this.previousCount = count;
         if (operation === 2) {
+            return this.status = "unexpected";
+        }
+        if (appended && count < previous) {
             return this.status = "unexpected";
         }
         if (count > MAX_CATEGORIES || (count >= MAX_CATEGORIES && segmented)) {
@@ -48,7 +56,7 @@ export function getBinding(view: powerbi.DataView): Binding | undefined {
     };
 }
 
-export function canonicalCategory(value: powerbi.PrimitiveValue): string {
+export function canonicalCategory(value: powerbi.PrimitiveValue | null | undefined): string {
     if (value === null || value === undefined) {
         return "0:";
     }

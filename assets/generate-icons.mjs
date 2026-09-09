@@ -90,7 +90,8 @@ function rasterize(size) {
     ]);
 }
 
-for (const [filename, size] of [["icon.png", 20], ["icon-128.png", 128]]) {
-    fs.writeFileSync(new URL(`./${filename}`, import.meta.url), rasterize(size));
-    console.log(`Wrote ${filename}: ${size} x ${size}, RGBA PNG`);
+for (const [filename, size] of [["icon.png", 20], ["icon-128.png", 128], ["icon-300.png", 300]]) {
+    const bytes = rasterize(size);
+    fs.writeFileSync(new URL(`./${filename}`, import.meta.url), bytes);
+    console.log(`Wrote ${filename}: ${size} x ${size}, RGBA PNG, CRC32 0x${crc32(bytes).toString(16).padStart(8, "0")}`);
 }

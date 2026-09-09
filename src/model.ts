@@ -42,6 +42,12 @@ type ValidRow = Omit<InputRow, "value" | "highlight"> & {
     highlight?: number;
 };
 
+export function contributionProblem(value: unknown): "missing" | "invalid" | "negative" | undefined {
+    if (value === null || value === undefined) return "missing";
+    if (typeof value !== "number" || !Number.isFinite(value)) return "invalid";
+    return value < 0 ? "negative" : undefined;
+}
+
 function compareText(left: string, right: string): number {
     // Relational string comparison uses UTF-16 code units, independent of host locale.
     return left < right ? -1 : left > right ? 1 : 0;
@@ -93,13 +99,10 @@ export function analyze(rows: InputRow[], thresholdPercent: number): ParetoModel
     const valid: ValidRow[] = [];
     for (const row of rows) {
         let value: number | undefined;
-        if (row.value === null || row.value === undefined) {
-            issues.missing++;
-        } else if (typeof row.value !== "number" || !Number.isFinite(row.value)) {
-            issues.invalid++;
-        } else if (row.value < 0) {
-            issues.negative++;
-        } else {
+        const problem = contributionProblem(row.value);
+        if (problem) {
+            issues[problem]++;
+        } else if (typeof row.value === "number") {
             value = row.value === 0 ? 0 : row.value;
         }
 

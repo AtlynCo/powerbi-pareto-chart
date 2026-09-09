@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "CustomerRevenuePareto",
+  "displayName": "Customer revenue concentration",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "annotations": [
+    {
+      "name": "scenario",
+      "value": "Synthetic customer concentration buckets with additive USD revenue and invoice tooltip."
+    },
+    {
+      "name": "expectedCrossing",
+      "value": "Customer portfolio 06 is the first 80% crossing at rank 6 with 800000 of 1000000 USD; portfolio 07 ties at the boundary."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "DefectCountParetoVisual",
+  "position": {
+    "x": 48,
+    "y": 48,
+    "z": 0,
+    "width": 1184,
+    "height": 624,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "atlynPareto18722664651549C392ABF6B1EBA46945",
+    "query": {
+      "isDrillDisabled": true,
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Defects"
+                    }
+                  },
+                  "Property": "Category"
+                }
+              },
+              "queryRef": "Defects.Category"
+            }
+          ]
+        },
+        "Contribution": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Defects"
+                    }
+                  },
+                  "Property": "Total defects"
+                }
+              },
+              "queryRef": "Defects.Total defects"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Defects"
+                    }
+                  },
+                  "Property": "Total rework minutes"
+                }
+              },
+              "queryRef": "Defects.Total rework minutes"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "analysis": [
+        {
+          "properties": {
+            "threshold": { "expr": { "Literal": { "Value": "80D" } } },
+            "partialPolicy": { "expr": { "Literal": { "Value": "'withhold'" } } },
+            "pageSize": { "expr": { "Literal": { "Value": "30D" } } },
+            "startRank": { "expr": { "Literal": { "Value": "1D" } } }
+          }
+        }
+      ],
+      "appearance": [
+        {
+          "properties": {
+            "fontSize": { "expr": { "Literal": { "Value": "12D" } } },
+            "showTable": { "expr": { "Literal": { "Value": "true" } } }
+          }
+        }
+      ]
+    }
+  },
+  "annotations": [
+    {
+      "name": "binding",
+      "value": "Category=Defects[Category]; Contribution=[Total defects]; Tooltip=[Total rework minutes]"
+    }
+  ]
+}

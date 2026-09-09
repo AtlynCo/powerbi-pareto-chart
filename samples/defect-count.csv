@@ -1,0 +1,10 @@
+Category,DefectCount,ReworkMinutes
+Packaging,20,50
+Design,70,210
+Surface,20,60
+Assembly,50,150
+Labeling,20,40
+Fastener,10,30
+Calibration,6,24
+,4,12
+Documentation,0,0

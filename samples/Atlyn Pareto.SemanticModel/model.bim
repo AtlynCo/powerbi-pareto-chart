@@ -1,0 +1,152 @@
+{
+  "name": "Atlyn Pareto Samples",
+  "compatibilityLevel": 1600,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "tables": [
+      {
+        "name": "Defects",
+        "description": "Invented, disjoint defect categories. Embedded offline data mirrors defect-count.csv.",
+        "columns": [
+          {
+            "name": "Category",
+            "dataType": "string",
+            "sourceColumn": "Category",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DefectCount",
+            "dataType": "int64",
+            "sourceColumn": "DefectCount",
+            "formatString": "#,0",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "ReworkMinutes",
+            "dataType": "int64",
+            "sourceColumn": "ReworkMinutes",
+            "formatString": "#,0",
+            "summarizeBy": "sum"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total defects",
+            "expression": "SUM(Defects[DefectCount])",
+            "formatString": "#,0",
+            "description": "Bind to Contribution. Additive defect count; total 200 before filters."
+          },
+          {
+            "name": "Total rework minutes",
+            "expression": "SUM(Defects[ReworkMinutes])",
+            "formatString": "#,0",
+            "description": "Optional Tooltip measure; not part of the defect-count denominator."
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Defects",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #table(",
+                "        type table [Category = nullable text, DefectCount = Int64.Type, ReworkMinutes = Int64.Type],",
+                "        {",
+                "            {\"Packaging\", 20, 50},",
+                "            {\"Design\", 70, 210},",
+                "            {\"Surface\", 20, 60},",
+                "            {\"Assembly\", 50, 150},",
+                "            {\"Labeling\", 20, 40},",
+                "            {\"Fastener\", 10, 30},",
+                "            {\"Calibration\", 6, 24},",
+                "            {null, 4, 12},",
+                "            {\"Documentation\", 0, 0}",
+                "        }",
+                "    )",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Complaints",
+        "description": "Invented, disjoint complaint categories. All costs use one illustrative USD unit. Embedded data mirrors complaint-cost.csv.",
+        "columns": [
+          {
+            "name": "Category",
+            "dataType": "string",
+            "sourceColumn": "Category",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ComplaintCostUSD",
+            "dataType": "decimal",
+            "sourceColumn": "ComplaintCostUSD",
+            "formatString": "\"$\"#,0.00",
+            "summarizeBy": "sum"
+          },
+          {
+            "name": "ComplaintCount",
+            "dataType": "int64",
+            "sourceColumn": "ComplaintCount",
+            "formatString": "#,0",
+            "summarizeBy": "sum"
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total complaint cost",
+            "expression": "SUM(Complaints[ComplaintCostUSD])",
+            "formatString": "\"$\"#,0.00",
+            "description": "Bind to Contribution. Additive cost in USD; total 10000 before filters."
+          },
+          {
+            "name": "Total complaints",
+            "expression": "SUM(Complaints[ComplaintCount])",
+            "formatString": "#,0",
+            "description": "Optional Tooltip measure; not part of the cost denominator."
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Complaints",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #table(",
+                "        type table [Category = text, ComplaintCostUSD = Currency.Type, ComplaintCount = Int64.Type],",
+                "        {",
+                "            {\"Support\", 900, 9},",
+                "            {\"Delivery\", 2500, 25},",
+                "            {\"Billing\", 3200, 32},",
+                "            {\"Returns\", 900, 9},",
+                "            {\"Product quality\", 1500, 15},",
+                "            {\"Account\", 400, 4},",
+                "            {\"Checkout\", 600, 6},",
+                "            {\"Warranty\", 0, 0}",
+                "        }",
+                "    )",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"Defects\",\"Complaints\"]"
+      }
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "dataRoles": [
+    { "name": "Category", "displayName": "Category", "displayNameKey": "Role_Category", "kind": "Grouping" },
+    { "name": "Contribution", "displayName": "Contribution", "displayNameKey": "Role_Contribution", "kind": "Measure", "requiredTypes": [ { "numeric": true }, { "integer": true } ] },
+    { "name": "Tooltips", "displayName": "Tooltips", "displayNameKey": "Role_Tooltips", "kind": "Measure" }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [ { "Category": { "min": 1, "max": 1 }, "Contribution": { "min": 1, "max": 1 }, "Tooltips": { "max": 5 } } ],
+      "categorical": {
+        "categories": { "for": { "in": "Category" }, "dataReductionAlgorithm": { "window": { "count": 10000 } } },
+        "values": { "select": [ { "bind": { "to": "Contribution" } }, { "for": { "in": "Tooltips" } } ] }
+      }
+    }
+  ],
+  "objects": {
+    "analysis": {
+      "displayName": "Analysis", "displayNameKey": "Card_Analysis",
+      "properties": {
+        "threshold": { "displayName": "Threshold (%)", "displayNameKey": "Setting_Threshold", "type": { "numeric": true } },
+        "partialPolicy": { "displayName": "Incomplete data", "displayNameKey": "Setting_PartialPolicy", "type": { "enumeration": [
+          { "value": "withhold", "displayName": "Withhold shares", "displayNameKey": "Policy_Withhold" },
+          { "value": "subset", "displayName": "Analyze received subset", "displayNameKey": "Policy_Subset" }
+        ] } },
+        "pageSize": { "displayName": "Categories per page", "displayNameKey": "Setting_PageSize", "type": { "numeric": true } }
+      }
+    },
+    "appearance": {
+      "displayName": "Appearance", "displayNameKey": "Card_Appearance",
+      "properties": {
+        "barColor": { "displayName": "Bars", "displayNameKey": "Setting_BarColor", "type": { "fill": { "solid": { "color": true } } } },
+        "thresholdColor": { "displayName": "Threshold contributors", "displayNameKey": "Setting_ThresholdColor", "type": { "fill": { "solid": { "color": true } } } },
+        "lineColor": { "displayName": "Cumulative share", "displayNameKey": "Setting_LineColor", "type": { "fill": { "solid": { "color": true } } } },
+        "fontSize": { "displayName": "Text size", "displayNameKey": "Setting_FontSize", "type": { "numeric": true } },
+        "showTable": { "displayName": "Show data table", "displayNameKey": "Setting_ShowTable", "type": { "bool": true } }
+      }
+    }
+  },
+  "supportsHighlight": true,
+  "supportsMultiVisualSelection": true,
+  "supportsKeyboardFocus": true,
+  "supportsLandingPage": true,
+  "supportsEmptyDataView": true,
+  "tooltips": { "supportedTypes": { "default": true }, "roles": [ "Tooltips" ] },
+  "sorting": { "implicit": { "clauses": [ { "role": "Category", "direction": 1 } ] } },
+  "privileges": []
+}

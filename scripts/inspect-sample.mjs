@@ -4,8 +4,10 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import Ajv from "ajv";
 import { readPackage, validatePackage } from "./package-utils.mjs";
+import { inspectSampleLayout } from "./sample-layout.mjs";
 
-const root = path.resolve("artifacts", "sample");
+const root = path.resolve(process.argv[2] ?? path.join("artifacts", "sample"));
+const layout = inspectSampleLayout(root);
 const read = relative => JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
 const manifest = read("sample-manifest.json");
 const packaged = validatePackage(readPackage());
@@ -83,7 +85,8 @@ for (const relative of fs.readdirSync(root, { recursive: true })) {
     assert.ok(validate(data), `${relative}: ${JSON.stringify(validate.errors)}`);
     validated.push(relative.replaceAll("\\", "/"));
 }
-const evidence = { packageSha256: packaged.sha256, validated, schemas, resourceBytesMatchPackage: true,
+const evidence = { packageSha256: packaged.sha256, layout, validated, schemas, resourceBytesMatchPackage: true,
     nativeValidation: "Not performed; schema and local binding/resource checks are not Power BI Desktop validation." };
-fs.writeFileSync(path.join("artifacts", "sample-validation.json"), JSON.stringify(evidence, null, 2) + "\n");
+const evidencePath = process.argv[2] ? path.join(root, "sample-validation.json") : path.join("artifacts", "sample-validation.json");
+fs.writeFileSync(evidencePath, JSON.stringify(evidence, null, 2) + "\n");
 console.log(`Assembled sample: ${validated.length} schema-validated files, 3 bound pages, exact package resources ${packaged.sha256}. Native validation remains manual.`);

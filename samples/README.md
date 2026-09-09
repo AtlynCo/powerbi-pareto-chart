@@ -182,3 +182,18 @@ The source layout follows Microsoft's public documentation and current public sc
 - [Public PBIR resource-layout example, pinned commit](https://github.com/ProdataSQL/FinancialModelling/blob/ec738ceb6a801f416b88b93c1dcfddbbe89426b7/Workspace/Finance-GL.Report/definition/report.json): confirms the private `CustomVisuals/<guid>/package.json` + `resources/<guid>.pbiviz.json` layout and filename-relative resource entry. No third-party visual code is copied into this sample.
 
 `$schema` URLs identify file formats for editors and validation; the sample has no web query. Do not check generated `.pbi` caches, local Desktop settings, credentials, or private report data into source control.
+
+## Native-preflight safeguards
+
+This sample uses **TMSL `model.bim`**, not TMDL; there is no `model.tmdl` or indented `ref table` directive. The required PBIR `definition\version.json` is present with version **4.0.0**. The layout validator explicitly requires that file and the other entry points before schema validation, since validating only files that exist cannot detect an omitted required file. A regression removes the version file and confirms rejection; mixed TMSL/TMDL definitions are rejected too.
+
+On a machine with Power BI Desktop already installed, its official TOM assemblies can deserialize the model without launching Desktop, connecting to a server, installing dependencies or executing the embedded M/DAX:
+
+```powershell
+npm run sample
+npm run sample:tom
+```
+
+The parser command writes `artifacts\sample-tom-preflight.json` with input/package hashes, exact installed assembly hashes/versions and deserialized table/member counts. It fails explicitly if the required installed assemblies are absent. `-DesktopBin` can identify another authorized Desktop installation. **TOM parsing is not native report opening, refresh, rendering, export or acceptance evidence.**
+
+For a provisional native retry, copy the assembled sample into a new, separately named directory under `artifacts` without overwriting any sealed release. Inspect that directory with `node scripts\inspect-sample.mjs <retry-directory>`, then `npm run sample:tom -- -SampleDirectory <retry-directory> -EvidencePath <retry-directory>\tom-preflight.json`. This records layout/schema/resource and TOM evidence alongside the retry. Keep the existing package hash explicit, preserve the original sealed bundle and certification ref, and let the coordinator operate the Desktop UI. A retry sample is not a new paid/submission package.

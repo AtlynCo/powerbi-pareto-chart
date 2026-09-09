@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { analyze } from "../src/model";
 import { canonicalCategory } from "../src/data";
+import { inspectSampleLayout } from "../scripts/sample-layout.mjs";
 
 const samples = path.resolve("samples");
 const database = JSON.parse(fs.readFileSync(path.join(samples, "Atlyn Pareto.SemanticModel", "model.bim"), "utf8"));
@@ -46,6 +47,7 @@ for (const scenario of [
 }
 
 test("PBIP references real local report and model definitions, not cached or remote data", () => {
+    assert.equal(inspectSampleLayout(samples).modelFormat, "TMSL");
     const project = JSON.parse(fs.readFileSync(path.join(samples, "Atlyn Pareto.pbip"), "utf8"));
     assert.equal(project.artifacts.length, 1);
     const reportPath = path.resolve(samples, project.artifacts[0].report.path);
@@ -58,4 +60,22 @@ test("PBIP references real local report and model definitions, not cached or rem
     assert.ok(fs.existsSync(path.join(modelPath, "model.bim")));
     assert.equal(database.compatibilityLevel, 1600);
     assert.equal(database.model.tables.length, 3);
+});
+
+test("sample validation rejects missing PBIR version metadata even when remaining JSON is valid", t => {
+    fs.mkdirSync(path.resolve("artifacts"), { recursive: true });
+    const root = fs.mkdtempSync(path.resolve("artifacts", "sample-layout-"));
+    t.after(() => fs.rmSync(root, { recursive: true }));
+    fs.cpSync(samples, root, { recursive: true });
+    inspectSampleLayout(root);
+    const versionFile = path.join(root, "Atlyn Pareto.Report", "definition", "version.json");
+    const versionBytes = fs.readFileSync(versionFile);
+    fs.unlinkSync(versionFile);
+    assert.throws(() => inspectSampleLayout(root), /Required sample file missing: .*version\.json/);
+    fs.writeFileSync(versionFile, JSON.stringify({ $schema: JSON.parse(versionBytes.toString()).$schema, version: "1.0.0" }));
+    assert.throws(() => inspectSampleLayout(root), /Expected PBIR definition version 4\.0\.0/);
+    fs.writeFileSync(versionFile, versionBytes);
+    inspectSampleLayout(root);
+    fs.writeFileSync(path.join(root, "Atlyn Pareto.SemanticModel", "model.tmdl"), "model Model\n    ref table Defects\n");
+    assert.throws(() => inspectSampleLayout(root), /do not mix a TMDL definition/);
 });

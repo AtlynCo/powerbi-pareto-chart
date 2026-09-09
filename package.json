@@ -22,6 +22,7 @@
     "test:browser": "node scripts/browser-tests.mjs",
     "evidence:quality": "node --import tsx scripts/quality-evidence.mts",
     "sample": "node scripts/assemble-sample.mjs && node scripts/inspect-sample.mjs",
+    "sample:tom": "pwsh -NoProfile -File scripts/inspect-sample-model.ps1",
     "release:verify": "node scripts/release-evidence.mjs",
     "release:freeze": "node scripts/freeze-release.mjs",
     "audit:dependencies": "npm audit --audit-level=moderate",

@@ -22,7 +22,8 @@
           { "value": "withhold", "displayName": "Withhold shares", "displayNameKey": "Policy_Withhold" },
           { "value": "subset", "displayName": "Analyze received subset", "displayNameKey": "Policy_Subset" }
         ] } },
-        "pageSize": { "displayName": "Categories per page", "displayNameKey": "Setting_PageSize", "type": { "numeric": true } }
+        "pageSize": { "displayName": "Maximum categories per page", "displayNameKey": "Setting_PageSize", "type": { "numeric": true } },
+        "startRank": { "displayName": "Saved rank position", "displayNameKey": "Setting_StartRank", "type": { "numeric": true } }
       }
     },
     "appearance": {

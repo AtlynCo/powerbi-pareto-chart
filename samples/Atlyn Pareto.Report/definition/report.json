@@ -1,5 +1,48 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
   "themeCollection": {},
-  "reportSource": "Default"
+  "reportSource": "Default",
+  "resourcePackages": [
+    {
+      "name": "atlynPareto18722664651549C392ABF6B1EBA46945",
+      "type": "CustomVisual",
+      "items": [
+        {
+          "name": "atlynPareto18722664651549C392ABF6B1EBA46945.pbiviz.json",
+          "path": "atlynPareto18722664651549C392ABF6B1EBA46945.pbiviz.json",
+          "type": "CustomVisualMetadata"
+        }
+      ],
+      "disabled": false
+    }
+  ],
+  "annotations": [
+    {
+      "name": "atlynParetoPackageVersion",
+      "value": "1.1.0.0"
+    },
+    {
+      "name": "atlynParetoApiVersion",
+      "value": "5.11.0"
+    },
+    {
+      "name": "atlynParetoAssemblyScript",
+      "value": "node scripts/assemble-sample.mjs"
+    },
+    {
+      "name": "authoringStatus",
+      "value": "Source-authored against public PBIR schemas and package inspection only; not opened in Power BI Desktop here."
+    },
+    {
+      "name": "atlynParetoResourceDirectory",
+      "value": "CustomVisuals/atlynPareto18722664651549C392ABF6B1EBA46945"
+    },
+    {
+      "name": "atlynParetoSampleManifest",
+      "value": "sample-manifest.json"
+    }
+  ],
+  "settings": {
+    "pagesPosition": "Bottom"
+  }
 }

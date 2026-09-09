@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { randomBytes } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 
 const home = path.resolve(".build-home");
 const certs = path.join(home, "pbiviz-certs");
@@ -30,4 +30,15 @@ if (process.platform === "win32") {
         "-keyout", path.join(certs, "PowerBICustomVisualTest_private.key"),
         "-out", path.join(certs, "PowerBICustomVisualTest_public.crt")]);
 }
-run(process.execPath, [path.resolve("node_modules", "powerbi-visuals-tools", "bin", "pbiviz.js"), "package", "--all-locales", "--no-stats", ...process.argv.slice(2)]);
+const args = ["package", "--all-locales", "--no-stats", ...process.argv.slice(2)];
+run(process.execPath, [path.resolve("node_modules", "powerbi-visuals-tools", "bin", "pbiviz.js"), ...args]);
+const { visual } = JSON.parse(fs.readFileSync("pbiviz.json", "utf8"));
+const filename = path.join("dist", `${visual.guid}.${visual.version}.pbiviz`);
+fs.mkdirSync("artifacts", { recursive: true });
+fs.writeFileSync(path.join("artifacts", "build-report.json"), JSON.stringify({
+    completedAt: new Date().toISOString(),
+    command: ["node", "node_modules/powerbi-visuals-tools/bin/pbiviz.js", ...args],
+    packageSha256: createHash("sha256").update(fs.readFileSync(filename)).digest("hex"),
+    certificateHandling: "Untrusted file-only material in ignored .build-home; no store installation/trust or server",
+    node: process.version
+}, null, 2) + "\n");

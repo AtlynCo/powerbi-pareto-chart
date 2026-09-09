@@ -31,6 +31,14 @@ test("create resets count for a new filtered query and unexpected increments nev
     assert.equal(tracker.accept(0, false, 0, () => true), "complete");
 });
 
+test("a shrinking final Append cannot be mislabeled as the complete aggregated query", () => {
+    const tracker = new SegmentTracker();
+    tracker.accept(10000, true, 0, () => true);
+    assert.equal(tracker.accept(3, false, 1, () => { throw Error("unexpected fetch"); }), "unexpected");
+    tracker.reset();
+    assert.equal(tracker.accept(3, false, 0, () => false), "complete");
+});
+
 test("stable typed category keys distinguish numeric, text, dates and blanks", () => {
     assert.equal(canonicalCategory(null), canonicalCategory(undefined));
     assert.notEqual(canonicalCategory(10), canonicalCategory("10"));

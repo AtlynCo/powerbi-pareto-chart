@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "ComplaintCostPareto",
+  "displayName": "Complaint cost Pareto",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "annotations": [
+    {
+      "name": "scenario",
+      "value": "Complaints table with additive USD contribution and complaint-count tooltip."
+    },
+    {
+      "name": "expectedCrossing",
+      "value": "Returns is the first 80% crossing at rank 4 with 8100 of 10000 USD."
+    }
+  ]
+}

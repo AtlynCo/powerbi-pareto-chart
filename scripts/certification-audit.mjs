@@ -4,6 +4,10 @@ import assert from "node:assert/strict";
 import { readPackage, validatePackage } from "./package-utils.mjs";
 
 const { payload, metadata, sha256 } = validatePackage(readPackage());
+assert.ok(JSON.parse(fs.readFileSync("package.json", "utf8")).scripts.eslint, "Certification source must expose an eslint script");
+if (fs.existsSync(".github/workflows")) {
+    assert.equal(fs.readdirSync(".github/workflows").filter(file => /\.ya?ml$/i.test(file)).length, 0, "Hosted CI/CD workflows are prohibited");
+}
 assert.equal(metadata.externalJS, null);
 assert.equal(metadata.dependencies, null);
 assert.equal(metadata.author.name, "Atlyn");

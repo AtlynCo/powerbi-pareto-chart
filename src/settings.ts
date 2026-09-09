@@ -22,7 +22,14 @@ class AnalysisCard extends formattingSettings.SimpleCard {
             maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100 }
         }
     });
-    slices = [this.threshold, this.partialPolicy, this.pageSize];
+    startRank = new formattingSettings.NumUpDown({
+        name: "startRank", displayName: "Saved rank position", displayNameKey: "Setting_StartRank", value: 1,
+        options: {
+            minValue: { type: powerbi.visuals.ValidatorType.Min, value: 1 },
+            maxValue: { type: powerbi.visuals.ValidatorType.Max, value: 100000 }
+        }
+    });
+    slices = [this.threshold, this.partialPolicy, this.pageSize, this.startRank];
 }
 
 class AppearanceCard extends formattingSettings.SimpleCard {

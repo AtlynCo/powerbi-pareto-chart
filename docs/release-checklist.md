@@ -1,24 +1,26 @@
-# First-release / submission checklist
+# Release and submission checklist
 
-**Status: automated local source/package gates passed on 2026-09-09; native host, operational, legal, and submission gates remain open.** `npm run verify` passed with 34 unit/data/sample tests, 25 real-Chromium packaged-runtime tests against a mocked host, and zero reported npm vulnerabilities. The inspected artifact is 128,209 bytes with SHA-256 `2ce6454a78ebc115126b92733d06bbc005205d5f861e28719be66032589b44d3`. These results apply to that artifact, not future rebuilds. The private source and local package are not evidence of a public listing, Microsoft certification, or broader owner/legal approval.
+**Reusable release checklist, not a passing-results attestation.** Record completed local gates in the immutable release's `validation/report.json`, command logs, package/quality/sample reports and `release-manifest.json`. Prior 1.0.0.0 results do not validate 1.1.0.0. Hosted CI/CD is disabled and not used. Native host, operational, legal, and submission gates remain separate; a private repository or local certification audit is not Microsoft approval.
 
 ## Identity and build
 
 - [ ] Owner approves the intended audience, distribution route, and product terms.
-- [x] Confirm display name Atlyn Pareto, stable GUID `atlynPareto18722664651549C392ABF6B1EBA46945`, visual package version `1.0.0.0`, host API 5.11 normalized as `5.11.0` in manifest/plugin/payload, SDK dependency `powerbi-visuals-api@5.11.1`, and tools `7.2.1`.
+- [ ] Confirm display name Atlyn Pareto, stable GUID `atlynPareto18722664651549C392ABF6B1EBA46945`, visual package version `1.1.0.0`, host API 5.11 normalized as `5.11.0` in manifest/plugin/payload, SDK dependency `powerbi-visuals-api@5.11.1`, and tools `7.2.1`.
 - [ ] Record source ref/commit, lockfile, Node/npm versions, OS, and exact build commands.
-- [x] Run typecheck, lint, unit tests, build/package inspection, packaged browser tests, dependency audit, license inventory, and static certification-readiness audit; retain output including failures/exceptions.
-- [x] Record the inspector's SHA-256, filename, size, privileges, locales, and archive contents for the artifact actually being distributed.
-- [x] Recheck absence of privileges, external resources, network/telemetry/license backend, secrets, and development-only artifacts in the shipped runtime.
-- [x] Use the package-only wrapper without certificate-store installation/trust or a development server; confirm `.build-home` certificates, private keys, and passwords are absent from the release archive.
-- [x] Verify the original 20×20 icon in the actual packaged archive; retain its editable SVG source.
-- [x] Preserve runtime permission notices and the vendored Globalize attribution inside the actual visual, not only in an omitted webpack license sidecar.
+- [ ] Run `npm run release:verify` from committed, clean source; retain static checks, independent unit/oracle tests, official package audit, actual-package browser tests, license/advisory checks, sample inspection and performance/capture logs.
+- [ ] Record the exact SHA-256, filename, bytes, privileges, locales, archive entries, tools and source provenance; do not rebuild afterward without repeating package-dependent evidence.
+- [ ] Confirm zero runtime browser requests/errors, empty privileges, embedded notices and no telemetry, license backend or development-only payload.
+- [ ] Inspect real package captures at 80x80, 258x198, 398x298, 1280x620 and 1366x768, including long/dense labels, multiple instances, RTL/high contrast, scroll and state transitions. Record findings and image hashes in `artifacts/visual-review.json`.
+- [ ] Retain 20 measured samples plus 3 warmups for each 1,000/100,000-row create/update/resize operation, machine details, raw samples, p50/p95/max and shared-machine caveats.
+- [ ] Verify original 20x20 packaged and 300x300 listing icons, and 1-5 unchanged 1366x768 package screenshots no larger than 1024 KB each.
+- [ ] Run `npm run release:freeze`; preserve its immutable output and SHA256SUMS outside ephemeral build output. Exclude build certificates/keys/passwords and the third-party Microsoft test workbook.
+- [ ] Push the reviewed source, open a PR, and create the lowercase `certification` ref at the same final commit only if it does not already exist. Do not overwrite an existing ref or run hosted CI.
 
 ## Functional and host evidence
 
 - [ ] Perform [manual Desktop and service validation](host-validation.md) with versioned evidence and explicit untested paths.
-- [ ] Open and refresh the [PBIP starter](../samples/README.md) in the target Desktop build; import and bind the package. Do not call the starter a finished sample dashboard.
-- [ ] Compare both invented samples to their expected totals, first crossings, full boundary ties, blanks, and zeros.
+- [ ] Open and refresh the [assembled offline PBIP](../samples/README.md) in the target Desktop build; verify all three authored pages and exact embedded visual, then save the required real PBIX.
+- [ ] Compare defect, complaint-cost and customer scenarios to their expected totals, first crossings, full boundary ties, blanks and zeros.
 - [ ] Verify incomplete-data default withholding and opt-in received-subset warnings in actual host segmentation where feasible.
 - [ ] Verify invalid inputs reject the whole analysis, zero total stays distinct, and overflow does not fabricate percentages.
 - [ ] Verify all analyzed ranks remain available through pagination with unchanged totals.
@@ -34,7 +36,7 @@
 - [ ] Publish/approve an accurate public privacy notice and appropriate licensing terms/EULA. The repository's `UNLICENSED` metadata is not an end-user agreement.
 - [ ] Review actual bundled third-party licenses, copyright notices, and redistribution obligations; preserve required notices with any distributed material.
 - [ ] Approve product description, category, audience, branding, claims, and listing assets.
-- [ ] Produce real screenshots and, if requested, a completed PBIX/sample report from the tested artifact; ensure no customer data or misleading “80/20” claims.
+- [ ] Approve the three authentic package-browser screenshot candidates and captions. They are not Desktop captures. Produce the required completed offline PBIX through Desktop using the same version; ensure no customer data or misleading "80/20" claims.
 - [ ] Confirm the private GitHub issue URL is not presented as public AppSource-ready support.
 
 ## Microsoft submission, if the owner chooses it

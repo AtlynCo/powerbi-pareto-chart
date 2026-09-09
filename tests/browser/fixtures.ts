@@ -43,9 +43,11 @@ export const test = base.extend<{ app: PackagedApp; hostOptions: HostOptions }>(
         const result = readPackage() as { payload: Payload; sha256: string; filename: string };
         const { payload } = result;
         const pageErrors: string[] = [];
+        const consoleErrors: string[] = [];
         const requests: string[] = [];
         const failedRequests: string[] = [];
         page.on("pageerror", error => pageErrors.push(error.message));
+        page.on("console", message => { if (message.type() === "error") consoleErrors.push(message.text()); });
         page.on("request", request => requests.push(request.url()));
         page.on("requestfailed", request => failedRequests.push(`${request.url()}: ${request.failure()?.errorText}`));
         await page.route("**/*", route => route.abort("blockedbyclient"));
@@ -76,10 +78,11 @@ export const test = base.extend<{ app: PackagedApp; hostOptions: HostOptions }>(
             const state = await app.state();
             await testInfo.attach("host-events", { body: JSON.stringify(state.events), contentType: "application/json" });
             await testInfo.attach("browser-diagnostics", {
-                body: JSON.stringify({ pageErrors, requests, failedRequests }), contentType: "application/json"
+                body: JSON.stringify({ pageErrors, consoleErrors, requests, failedRequests }), contentType: "application/json"
             });
             await app.destroy();
             expect(pageErrors, "The packaged visual must not throw browser errors").toEqual([]);
+            expect(consoleErrors, "Handled input/host failures must be surfaced without browser-console errors").toEqual([]);
             expect(requests, "The packaged visual must work offline without any network requests").toEqual([]);
             expect(failedRequests, "Network failures must not be silently swallowed").toEqual([]);
             expect(state.events.filter(event => event.name === "failed")).toHaveLength(app.expectedRenderFailures);

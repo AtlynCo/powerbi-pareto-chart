@@ -23,12 +23,13 @@ Importing a `.pbiviz` makes a private visual available to that report; it does n
 | Home / End on chart | First / last chart category on the current page |
 | Enter / Space | Select the focused category |
 | Ctrl-click or Meta-click | Host multiselect |
-| Ctrl/Meta + Enter/Space on a chart category | Host keyboard multiselect |
+| Ctrl/Meta + Enter/Space on a chart or table category | Host keyboard multiselect |
 | Escape | Clear selection |
 | Right-click, Context Menu key, or Shift+F10 | Request the host context menu for the category |
 | Previous / Next controls | Change the displayed ranks, not the analysis denominator |
+| Go to rank / Show threshold | Open the page containing the requested rank / first crossing; retain the same denominator |
 
-Verify focus visibility, keyboard tooltips, table reading order, incoming selections, and selection persistence across redraws/pages. Test interactions with another native visual twice: once configured to cross-highlight and once to cross-filter. Highlights should overlay original bars without reranking; filters should recompute against the new query.
+Verify focus visibility, keyboard tooltips, table reading order, incoming selections, and selection persistence across redraws/pages. Save two bookmarks with different thresholds/rank positions, replay each, then narrow the filtered universe and confirm saved ranks clamp safely. Test interactions with another native visual twice: once configured to cross-highlight and once to cross-filter. Highlights should overlay original bars without reranking; filters should recompute against the new query.
 
 Also test multi-visual selection in a supporting host/report. Where the host sets `allowInteractions: false`, selection, clear-selection, and context-menu requests must be suppressed; confirm the chart/table can still be read and paged. Record whether this gating scenario was observed in the real host or only exercised in the mock-host harness.
 
@@ -51,11 +52,11 @@ A small sample cannot establish large-data host behavior. Record which large-dat
 
 ## Presentation and assistive technology
 
-- Resize from a small tile to a wide canvas; verify chart/table scrolling and usable controls.
+- Exercise 80x80, 258x198, 398x298, 1280x620 and 1366x768 tiles, then resize between them. At 80x80 expect the explicit compact total/state, not a full chart. Verify chart/table scrolling, readable dense/long category labels, and usable controls.
 - Inspect long labels, very large formatted numbers, blanks, and host measure format strings.
 - Switch host locale between en-US and fr-FR; check strings, formatted numeric values, and no locale-driven tie reorder.
 - Test RTL host layout separately; only en-US/fr-FR visual translations are supplied.
-- Test supported high-contrast themes, keyboard-only operation, and at least one screen reader. Check focused category descriptions, status/error announcements, table headers, and threshold meaning without relying only on color.
+- Test supported high-contrast themes, keyboard-only and touch operation, and at least one screen reader. Check focused category descriptions, status/error announcements, table headers, large text, and threshold meaning without relying only on color. Include multiple visual instances and loading/empty/error/recovery transitions with prior scroll and focus.
 - Verify no animations and no application-origin runtime network, storage, telemetry, or licensing calls. Distinguish Power BI's own host traffic from visual code.
 
 ## Save, publish, and export

@@ -35,7 +35,8 @@ export function categoricalView(values: unknown[], options: DataOptions = {}): p
         categorical: {
             categories: [{
                 source: categorySource,
-                values: options.labels ?? values.map((_, index) => `Category ${index}`),
+                // SDK PrimitiveValue omits the nulls used for actual host blanks.
+                values: (options.labels ?? values.map((_, index) => `Category ${index}`)) as powerbi.PrimitiveValue[],
                 identity: values.map((_, index) => ({
                     key: options.keys?.[index] ?? `row-${index}`,
                     expr: { kind: 0 }
@@ -88,6 +89,7 @@ export interface HostState {
     tooltips: { name: "show" | "move" | "hide"; options: TooltipCall }[];
     localizationKeys: string[];
     builderKeys: string[];
+    persisted: powerbi.VisualObjectInstancesToPersist[];
 }
 
 export interface VisualUpdate {
@@ -127,7 +129,7 @@ declare global {
 export function installHostMock(options: HostOptions & { resources: Record<string, Record<string, string>> }): void {
     const state: HostState = {
         events: [], fetchRequests: [], selections: [], selectedKeys: [], clears: 0,
-        menus: [], tooltips: [], localizationKeys: [], builderKeys: []
+        menus: [], tooltips: [], localizationKeys: [], builderKeys: [], persisted: []
     };
     let fetchAccepted = options.fetchAccepted ?? true;
     let selected: MockSelectionId[] = [];
@@ -198,6 +200,9 @@ export function installHostMock(options: HostOptions & { resources: Record<strin
         }
     };
     const host = {
+        persistProperties: (changes: powerbi.VisualObjectInstancesToPersist) => {
+            state.persisted.push(changes);
+        },
         locale,
         hostCapabilities: { allowInteractions: options.allowInteractions ?? true },
         colorPalette: {

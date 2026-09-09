@@ -2,7 +2,7 @@
   "name": "atlyn-pareto",
   "private": true,
   "description": "Offline categorical Pareto and concentration analysis for Power BI",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/AtlynCo/powerbi-pareto-chart.git"
@@ -13,12 +13,17 @@
   },
   "scripts": {
     "pbiviz": "pbiviz",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.tests.json",
     "build": "node scripts/build.mjs",
     "package": "node scripts/build.mjs && node scripts/inspect-package.mjs",
-    "lint": "eslint src",
+    "eslint": "eslint src",
+    "lint": "npm run eslint",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/browser-tests.mjs",
+    "evidence:quality": "node --import tsx scripts/quality-evidence.mts",
+    "sample": "node scripts/assemble-sample.mjs && node scripts/inspect-sample.mjs",
+    "release:verify": "node scripts/release-evidence.mjs",
+    "release:freeze": "node scripts/freeze-release.mjs",
     "audit:dependencies": "npm audit --audit-level=moderate",
     "audit:certification": "node scripts/build.mjs --certification-audit && node scripts/inspect-package.mjs && node scripts/certification-audit.mjs",
     "audit:licenses": "node scripts/license-audit.mjs",
@@ -26,7 +31,9 @@
   },
   "overrides": {
     "qs": "6.16.0",
-    "sockjs": { "uuid": "11.1.1" }
+    "sockjs": {
+      "uuid": "11.1.1"
+    }
   },
   "dependencies": {
     "powerbi-visuals-api": "5.11.1",
@@ -37,6 +44,7 @@
     "@playwright/test": "1.63.0",
     "@types/node": "24.10.1",
     "@typescript-eslint/eslint-plugin": "8.57.0",
+    "ajv": "6.15.0",
     "eslint": "9.39.4",
     "eslint-plugin-powerbi-visuals": "1.0.0",
     "fflate": "0.8.3",

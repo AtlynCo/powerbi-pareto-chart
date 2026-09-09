@@ -2,7 +2,7 @@
 
 An offline Power BI custom visual for ranking **nonnegative, additive contributions** and inspecting cumulative concentration. Descending bars show contribution; the cumulative line and configurable threshold identify a contributor set, including every equally valued category at the threshold boundary.
 
-**First-release source: 1.0.0.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
+**Release-quality source: 1.1.0.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
 
 ## Use the visual
 
@@ -10,9 +10,9 @@ An offline Power BI custom visual for ranking **nonnegative, additive contributi
 2. In Power BI Desktop, open the **Visualizations** pane's **… → Import a visual from a file**, select the package, and accept the import prompt only if your organization permits it.
 3. Add Atlyn Pareto to a report page. Bind exactly one **Category** field and one numeric **Contribution** measure. Optionally bind up to five **Tooltip** measures.
 4. Start with an additive measure such as `SUM(Defects[DefectCount])`, not a percentage, average, rate, or potentially overlapping distinct count.
-5. In **Format visual → Analysis**, choose a threshold from 1–100% (default 80%), categories per page from 10–100 (default 30), and the incomplete-data policy.
+5. In **Format visual → Analysis**, choose a threshold from 1–100% (default 80%), a maximum page size from 10–100 (default 30), and the incomplete-data policy. The actual page adapts to tile width. Use Go to rank or Show threshold for dense data; rank position is saved through native formatting metadata.
 
-For offline, invented data and an editable Desktop project starter, see [samples](samples/README.md). The supplied PBIP has a blank report page and an embedded semantic model: import and bind the visual yourself. It is **not** a finished sample dashboard or a PBIX.
+For offline invented defect, cost, and customer scenarios, see [samples](samples/README.md). `npm run sample` assembles three authored, bound PBIP pages with the exact built visual in `artifacts\sample`. Native Desktop open/refresh/save-as-PBIX remains a manual coordinator gate; no fake PBIX is supplied.
 
 ## Understand the result
 
@@ -27,6 +27,8 @@ For offline, invented data and an editable Desktop project starter, see [samples
 See the [complete data contract and limitations](docs/data-contract.md) before interpreting a report.
 
 ## Development
+
+Validation is **local only**. This repository does not contain or depend on GitHub Actions, hosted CI/CD, cloud coding sessions, or Codespaces. Pushing code and opening a review PR do not replace the local release checks.
 
 Use Node.js **22.13.0 or newer** and the locked dependency graph:
 
@@ -44,19 +46,21 @@ npm run audit:licenses
 npm run audit:dependencies
 ```
 
-Dependency and browser installation, and the dependency advisory audit, may access the network. The **packaged visual runtime** does not request privileges or use network calls, telemetry, external services, or a license backend.
+Developer installation/advisory checks, the first Microsoft-linked workbook fixture, and first sample-schema inspection may access the network. The **packaged visual runtime** does not request privileges or use network calls, telemetry, external services, or a license backend.
 
 `npm run verify` runs typecheck, lint, unit tests, the certification-readiness package build/audits, browser tests, licenses, and dependency advisories in that order. Browser tests therefore load real JavaScript and CSS from the last-built `.pbiviz`, with a **mocked Power BI host**; they are not Desktop/service tests. `audit:certification` runs the official tools' local `--certification-audit`, package inspection, and project static checks—**not Microsoft certification**. See [development and artifact evidence](docs/development.md).
 
 Packaging uses the official tools through a certificate-store-safe wrapper: isolated `.build-home` certificate files, no certificate installation/trust, and no development server. Build-local keys/passwords are excluded from the visual artifact.
+
+For a committed final baseline, `npm run release:verify` collects sequential local checks, assembled-sample inspection, authentic package captures and 20-sample performance distributions. After recorded screenshot inspection, `npm run release:freeze` creates an immutable, byte/hash-inventoried package/source/sample/evidence bundle. See the exact [release procedure and evidence boundaries](docs/development.md#sample-performance-and-immutable-release).
 
 ## Release identity
 
 | Item | Value |
 | --- | --- |
 | Display name | Atlyn Pareto |
-| Package version | `1.0.0.0` |
-| npm project version | `1.0.0` |
+| Package version | `1.1.0.0` |
+| npm project version | `1.1.0` |
 | Stable visual GUID | `atlynPareto18722664651549C392ABF6B1EBA46945` |
 | Power BI host API | `5.11` (manifest/plugin/payload: `5.11.0`) |
 | Power BI API SDK package | `powerbi-visuals-api@5.11.1` |
@@ -74,5 +78,7 @@ Packaging uses the official tools through a certificate-store-safe wrapper: isol
 - [Privacy, support, and licensing boundaries](docs/privacy-support-licensing.md)
 - [Third-party notices](THIRD-PARTY-NOTICES.md)
 - [Original icon source and reproducible raster assets](assets/README.md)
+- [Documentation-derived workflow comparison](docs/competitive-workflow.md)
+- [Current Microsoft requirements](docs/certification-requirements.md) and [owner-ready listing dossier](docs/listing-dossier.md)
 
 The coordinator approved the author/contact and URL metadata above and verified the FAQ content. Support responsiveness still requires a manual check; this is not a response-time commitment. The GitHub repository and its issue tracker are private: their URLs are **maintainer-only**, not public AppSource-ready support. Public privacy, licensing, listing content, and any external distribution still require owner approval.

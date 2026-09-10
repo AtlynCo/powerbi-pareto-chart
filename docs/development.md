@@ -4,6 +4,8 @@
 
 Run all commands below on an authorized local machine. GitHub Actions and other hosted CI/CD are disabled and no workflow is shipped. GitHub is used for source control and review only. Retain local command output, screenshots and measurements with the exact package; no hosted status badge is release evidence.
 
+The approved commercial model uses external Atlyn storefront subscriptions with an ungated runtime and free shared viewing. It requires no runtime licensing work, new keys/signer/AAD/API integration, feature gates or `WebAccess`. Documentation of this decision alone does not require repackaging or a version bump. Preserve sealed artifacts and their historical evidence; keep current business decisions in live documentation. Native assets, the required Microsoft Power BI certified badge and the coordinator's final release gate remain separate.
+
 ## Prerequisites
 
 - Owner-authorized access to this private repository.

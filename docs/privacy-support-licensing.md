@@ -26,9 +26,17 @@ When reporting an authorized internal issue, include package version/hash, host 
 
 ## Licensing and distribution
 
-This is a private repository. The root npm metadata is `UNLICENSED`. That label is **not** an open-source license and does not grant permission to use, copy, redistribute, sublicense, sell, or publish Atlyn Pareto.
+### Approved commercial operation
 
-No product price, trial, commercial entitlement, license enforcement promise, or public EULA is defined by this source. Owner-approved licensing/distribution terms are a prerequisite to external release. The absence of a license backend does not grant usage or redistribution rights.
+On 2026-09-10, the owner approved **existing Atlyn storefront subscriptions with ungated visuals and free shared viewing**. Subscription acquisition is external to the visual. Recipients can view shared reports without an additional visual subscription purchase or an in-visual license check. This does not remove Power BI's own licensing, access controls or tenant policies.
+
+The visual intentionally does not distinguish paid authors from other users. Do not add license keys, a signer, AAD/sign-in integration, entitlement APIs, feature gates, runtime requests or `WebAccess` for licensing. The existing offline renderer already matches the approved architecture; runtime licensing is not an outstanding implementation dependency.
+
+### Preserved first-party status
+
+This is a private repository. The first-party identifier in `package.json` remains **`UNLICENSED`**, and there is **no root first-party `LICENSE` file**. That metadata is not an open-source license and does not itself grant permission to use, copy, redistribute, sublicense, sell, or publish Atlyn Pareto. No relicensing or replacement legal terms are introduced by this business-model clarification.
+
+The approved acquisition/viewing model is not a price list, trial policy, EULA, redistribution license or promise of paid-author identity enforcement. Storefront/customer terms and public legal materials remain owner-managed. Free shared viewing does not mean free acquisition, open-source rights or unrestricted redistribution.
 
 Third-party components keep their own licenses. [THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md) retains those notices and identifies the declared runtime dependency set; it does **not** relicense the product as MIT. The original icon and invented sample sources are project assets, not a separate public asset license.
 
@@ -39,5 +47,6 @@ Third-party components keep their own licenses. [THIRD-PARTY-NOTICES.md](../THIR
 - Appropriate product licensing terms/EULA and distribution authorization.
 - Attribution and redistribution review of the actual packaged dependency graph.
 - Listing claims, branding, screenshots, accessibility claims, and export/support scope.
+- Actual Microsoft approval for the additionally required Power BI certified badge; do not display or claim it in advance.
 
 Do not treat local packaging, a permissive dependency-license inventory, or a static certification-readiness check as approval of any of these items.

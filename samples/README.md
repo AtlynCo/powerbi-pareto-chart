@@ -185,7 +185,11 @@ The source layout follows Microsoft's public documentation and current public sc
 
 ## Native-preflight safeguards
 
-This sample uses **TMSL `model.bim`**, not TMDL; there is no `model.tmdl` or indented `ref table` directive. The required PBIR `definition\version.json` is present with version **4.0.0**. The layout validator explicitly requires that file and the other entry points before schema validation, since validating only files that exist cannot detect an omitted required file. A regression removes the version file and confirms rejection; mixed TMSL/TMDL definitions are rejected too.
+This sample uses **TMSL `model.bim`**, not TMDL; there is no `model.tmdl` or indented `ref table` directive. The report has two independent format versions: **`definition.pbir` uses artifact version `4.0`**, while **`definition\version.json` uses report-definition version `2.0.0`**. Do not copy the artifact version into the report-definition file. `scripts\sample-versions.mjs` names the constants separately; generation validates both before copying source files and records both in `sample-manifest.json`. The inspector verifies the source/output pair and manifest agree.
+
+The previous definition value `4.0.0` passed JSON schema validation. On 2026-09-10, the coordinator reported a single-variable native Desktop 2.157 A/B on another catalog visual: only changing that definition value to `2.0.0` restored pages, rendering and refresh. Pareto's sample is corrected on that evidence, but **its own native acceptance remains with the coordinator**. Schema acceptance and TOM model parsing do not establish that the report pages load.
+
+The layout validator explicitly requires both version files and other entry points before schema validation, since validating only existing files cannot detect omissions. Regressions reject a missing version file, definition versions `4.0.0`/`4.0`, mistakenly swapped artifact versions, and mixed TMSL/TMDL definitions.
 
 On a machine with Power BI Desktop already installed, its official TOM assemblies can deserialize the model without launching Desktop, connecting to a server, installing dependencies or executing the embedded M/DAX:
 

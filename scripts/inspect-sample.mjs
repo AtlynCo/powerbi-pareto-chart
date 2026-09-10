@@ -10,6 +10,8 @@ const root = path.resolve(process.argv[2] ?? path.join("artifacts", "sample"));
 const layout = inspectSampleLayout(root);
 const read = relative => JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
 const manifest = read("sample-manifest.json");
+assert.equal(manifest.report.artifactVersion, layout.reportArtifactVersion);
+assert.equal(manifest.report.definitionVersion, layout.reportDefinitionVersion);
 const packaged = validatePackage(readPackage());
 assert.equal(manifest.package.sha256, packaged.sha256);
 const reportRoot = path.dirname(path.join(root, manifest.report.pbirPath));

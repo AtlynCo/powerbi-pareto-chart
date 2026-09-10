@@ -5,6 +5,7 @@ import path from "node:path";
 import { analyze } from "../src/model";
 import { canonicalCategory } from "../src/data";
 import { inspectSampleLayout } from "../scripts/sample-layout.mjs";
+import { PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "../scripts/sample-versions.mjs";
 
 const samples = path.resolve("samples");
 const database = JSON.parse(fs.readFileSync(path.join(samples, "Atlyn Pareto.SemanticModel", "model.bim"), "utf8"));
@@ -73,9 +74,38 @@ test("sample validation rejects missing PBIR version metadata even when remainin
     fs.unlinkSync(versionFile);
     assert.throws(() => inspectSampleLayout(root), /Required sample file missing: .*version\.json/);
     fs.writeFileSync(versionFile, JSON.stringify({ $schema: JSON.parse(versionBytes.toString()).$schema, version: "1.0.0" }));
-    assert.throws(() => inspectSampleLayout(root), /Expected PBIR definition version 4\.0\.0/);
+    assert.throws(() => inspectSampleLayout(root), /Expected PBIR definition version 2\.0\.0/);
     fs.writeFileSync(versionFile, versionBytes);
     inspectSampleLayout(root);
     fs.writeFileSync(path.join(root, "Atlyn Pareto.SemanticModel", "model.tmdl"), "model Model\n    ref table Defects\n");
     assert.throws(() => inspectSampleLayout(root), /do not mix a TMDL definition/);
+});
+
+test("PBIR artifact 4.0 and definition 2.0.0 remain distinct and reject the native empty-report regression", t => {
+    assert.equal(PBIR_ARTIFACT_VERSION, "4.0");
+    assert.equal(PBIR_DEFINITION_VERSION, "2.0.0");
+    const layout = inspectSampleLayout(samples);
+    assert.equal(layout.reportArtifactVersion, "4.0");
+    assert.equal(layout.reportDefinitionVersion, "2.0.0");
+    fs.mkdirSync(path.resolve("artifacts"), { recursive: true });
+    const root = fs.mkdtempSync(path.resolve("artifacts", "sample-versions-"));
+    t.after(() => fs.rmSync(root, { recursive: true }));
+    fs.cpSync(samples, root, { recursive: true });
+    const definitionPath = path.join(root, "Atlyn Pareto.Report", "definition", "version.json");
+    const definitionBytes = fs.readFileSync(definitionPath);
+    const definition = JSON.parse(definitionBytes.toString());
+    for (const unsupported of ["4.0.0", "4.0"]) {
+        fs.writeFileSync(definitionPath, JSON.stringify({ ...definition, version: unsupported }));
+        assert.throws(() => inspectSampleLayout(root), /Expected PBIR definition version 2\.0\.0/);
+    }
+    fs.writeFileSync(definitionPath, definitionBytes);
+    const artifactPath = path.join(root, "Atlyn Pareto.Report", "definition.pbir");
+    const artifactBytes = fs.readFileSync(artifactPath);
+    const artifact = JSON.parse(artifactBytes.toString());
+    for (const swapped of ["2.0.0", "4.0.0"]) {
+        fs.writeFileSync(artifactPath, JSON.stringify({ ...artifact, version: swapped }));
+        assert.throws(() => inspectSampleLayout(root), /Expected PBIR artifact version 4\.0/);
+    }
+    fs.writeFileSync(artifactPath, artifactBytes);
+    inspectSampleLayout(root);
 });

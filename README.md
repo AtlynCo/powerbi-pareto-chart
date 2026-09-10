@@ -4,6 +4,14 @@ An offline Power BI custom visual for ranking **nonnegative, additive contributi
 
 **Release-quality source: 1.1.0.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
 
+## Acquisition and shared viewing
+
+The owner-approved model is **acquisition through existing Atlyn storefront subscriptions, with an intentionally ungated visual runtime and free shared viewing**. Commercial acquisition is managed outside Power BI. The visual does not enforce paid-author identity or require viewer purchases, license keys, sign-in, entitlement APIs, feature gates, or runtime licensing requests.
+
+The existing offline renderer is the intended implementation; no runtime licensing integration or licensing-driven package/version change is pending. First-party npm license metadata remains **`UNLICENSED`**, with no root first-party `LICENSE` file or new license grant. See [licensing boundaries](docs/privacy-support-licensing.md).
+
+The owner additionally requires the **Microsoft Power BI certified badge**. It has not been granted: AppSource listing, local audits, and an offline runtime are not certification. Native evidence, real PBIX assets, public terms and Microsoft approval remain coordinator-owned gates. Certification-ref changes, changes to `main`, PR merges and submission require the coordinator's final release gate.
+
 ## Use the visual
 
 1. Obtain an owner-authorized `.pbiviz`, or [build one from this repository](docs/development.md).

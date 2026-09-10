@@ -2,6 +2,8 @@
 
 **Draft for owner review. Not a submission, approval, license offer, or certification claim.** The coordinator owns all Desktop/service and Partner Center actions. No live upload, listing mutation, or submission is authorized by this document.
 
+**Owner decision, 2026-09-10:** existing Atlyn storefront subscriptions fund acquisition; the runtime is intentionally ungated and shared viewing is free. No paid-author identity enforcement or runtime licensing integration is pending. Keep the existing offline package and version unless another actual runtime change requires a rebuild. The additional **Microsoft Power BI certified badge is required but has not been granted**. Native/PBIX assets and the coordinator's final release gate remain outstanding; do not move the certification ref, change `main`, merge or submit.
+
 ## Proposed listing copy
 
 **Name:** Atlyn Pareto
@@ -18,11 +20,13 @@ Data scope is explicit. Report filters change the current query. Highlight overl
 
 The visual provides native selection and context-menu integration, keyboard access, a readable table, high-contrast handling, English and French resources, and RTL presentation. Very small tiles show a compact state instead of an unreadable chart. The runtime is offline, with no telemetry, remote assets, external calculation service, or licensing backend.
 
+Acquire Atlyn Pareto through the existing Atlyn storefront subscription offering. The visual itself is ungated, and recipients can view shared reports without purchasing an additional visual subscription or entering a license key. Power BI licensing, access permissions and tenant policies still apply. The runtime does not verify an author's subscription identity.
+
 The report author must supply an additive measure with a consistent unit. Rates, averages, percentages, overlapping distinct counts, and other nonadditive measures are not repaired by the visual. It does not provide Top N/Other aggregation, ABC classes, forecasting, or a financial formula engine.
 
 **Suggested search terms:** Pareto; concentration; cumulative contribution; defect analysis; complaint cost; customer concentration.
 
-This copy is subject to owner approval and the current Partner Center field constraints. Do not add Microsoft-certified, IBCS-certified, “best-in-class,” performance-superiority, free/pricing, or support-response claims without the corresponding evidence and authorization.
+This copy is subject to final owner approval and the current Partner Center field constraints. The approved free-shared-viewing statement does not mean free acquisition or an open-source license. Do not add Microsoft-certified, IBCS-certified, "best-in-class," performance-superiority, specific price/trial, or support-response claims without the corresponding evidence and authorization.
 
 ## Publisher-owned fields and gates
 
@@ -31,10 +35,12 @@ This copy is subject to owner approval and the current Partner Center field cons
 | Product/contact metadata | Approved: Atlyn; `atlyn.help@gmail.com`; `https://www.atlynco.com/docs/faq` |
 | Public support operations | Responsiveness and release-time anonymous access require owner/coordinator confirmation |
 | Public privacy URL and notice | Owner approval/publication required; internal privacy notes are not a published notice |
-| License/EULA, pricing, trials and distribution rights | Owner decision required; `UNLICENSED` and absence of a licensing backend do not mean free use |
+| Acquisition and runtime architecture | Approved: existing Atlyn storefront subscriptions, ungated runtime, free shared viewing; no paid-author enforcement |
+| First-party source license | Preserve `package.json` identifier `UNLICENSED`; no root first-party `LICENSE` file and no relicensing |
+| Public EULA, price/trial details and distribution terms | Owner-managed legal/publication fields remain to be supplied or confirmed; not a runtime integration blocker |
 | Publisher identity, account authority, business/legal acceptance | Owner/authorized publisher only |
 | Listing categories and markets | Choose from the current portal with owner approval |
-| Certification claim or badge | Not approved; omit until Microsoft grants the corresponding approval |
+| Additional Power BI certified badge | Required by owner; Microsoft has not granted it, so omit the badge/claim until actual approval |
 | Private source access for reviewers | Coordinator must arrange authorized access; never make the repository public by default |
 | Real PBIX/sample acceptance | Desktop-generated output and coordinator validation required; never rename a PBIP/ZIP to PBIX |
 | Actual Desktop/service/export evidence | Manual coordinator gate; packaged Chromium host-mock results do not establish it |

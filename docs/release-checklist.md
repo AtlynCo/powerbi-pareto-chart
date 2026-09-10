@@ -4,6 +4,9 @@
 
 ## Identity and build
 
+- [x] Owner approved existing Atlyn storefront subscriptions with intentionally ungated runtime and free shared viewing. Runtime licensing implementation is not pending.
+- [ ] Preserve `UNLICENSED` first-party npm metadata and existing legal status; do not invent a `LICENSE`, public EULA or paid-author enforcement guarantee.
+- [ ] Keep license keys, signer/AAD/API integration, feature gates and runtime licensing requests out of the visual. Do not rebuild or bump the package solely for the commercial-model documentation change.
 - [ ] Owner approves the intended audience, distribution route, and product terms.
 - [ ] Confirm display name Atlyn Pareto, stable GUID `atlynPareto18722664651549C392ABF6B1EBA46945`, visual package version `1.1.0.0`, host API 5.11 normalized as `5.11.0` in manifest/plugin/payload, SDK dependency `powerbi-visuals-api@5.11.1`, and tools `7.2.1`.
 - [ ] Record source ref/commit, lockfile, Node/npm versions, OS, and exact build commands.
@@ -14,7 +17,7 @@
 - [ ] Retain 20 measured samples plus 3 warmups for each 1,000/100,000-row create/update/resize operation, machine details, raw samples, p50/p95/max and shared-machine caveats.
 - [ ] Verify original 20x20 packaged and 300x300 listing icons, and 1-5 unchanged 1366x768 package screenshots no larger than 1024 KB each.
 - [ ] Run `npm run release:freeze`; preserve its immutable output and SHA256SUMS outside ephemeral build output. Exclude build certificates/keys/passwords and the third-party Microsoft test workbook.
-- [ ] Push the reviewed source, open a PR, and create the lowercase `certification` ref at the same final commit only if it does not already exist. Do not overwrite an existing ref or run hosted CI.
+- [ ] After the coordinator's final gate, align the lowercase `certification` ref with the approved source/package baseline. Until then, hold that ref, changes to `main`, PR merges and submission. Do not overwrite an existing ref without authorization or run hosted CI.
 
 ## Functional and host evidence
 
@@ -39,11 +42,13 @@
 - [ ] Approve the three authentic package-browser screenshot candidates and captions. They are not Desktop captures. Produce the required completed offline PBIX through Desktop using the same version; ensure no customer data or misleading "80/20" claims.
 - [ ] Confirm the private GitHub issue URL is not presented as public AppSource-ready support.
 
-## Microsoft submission, if the owner chooses it
+## Required Microsoft Power BI certification
 
+- [x] Owner explicitly requires the additional Microsoft Power BI certified badge, not merely an AppSource listing.
 - [ ] Check current Microsoft Partner Center/AppSource and Power BI visual certification requirements at submission time; requirements can change.
 - [ ] Supply the required artifact, sample/report, public support/privacy/licensing materials, and listing information through the authorized publisher account.
 - [ ] Resolve Microsoft validation findings; preserve correspondence and final outcome.
+- [ ] Obtain actual Microsoft certification approval for the submitted visual/version; an offline runtime or local audit does not earn the badge.
 - [ ] Use certification/approval language or badges only after the corresponding Microsoft approval applies to the submitted release.
 
 `npm run audit:certification` runs the official tools' **local** `--certification-audit` package build through the certificate-store-safe wrapper, followed by archive inspection and project static checks. It is not a Microsoft submission. Its name and successful exit do not constitute certification, security clearance, or manual host approval. Run packaged browser checks afterward; `npm run verify` preserves that order.

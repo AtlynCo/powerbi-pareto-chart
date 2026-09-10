@@ -4,6 +4,8 @@
 **Purpose:** actionable checklist for this worktree based on current public Microsoft documentation.
 **Boundary:** this document is a research digest, **not** a certification approval, listing submission, or host-validation record.
 
+**Owner decision added 2026-09-10 (not a new Microsoft-policy review):** acquisition uses existing Atlyn storefront subscriptions; the runtime remains ungated, with free shared viewing and no paid-author identity checks, license keys, signer, AAD/API integration, feature gates or runtime licensing calls. No licensing-driven repackage/version bump is required. First-party metadata remains `UNLICENSED`; this does not invent public license terms. The owner explicitly requires the additional **Microsoft Power BI certified badge**, which is not yet granted. Native/PBIX evidence and authorized Microsoft review remain required, and the coordinator holds certification-ref changes, `main`, merges and submission until the final gate.
+
 ## 1. Quick conclusions
 
 ### Most important mandatory findings

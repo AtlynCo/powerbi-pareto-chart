@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readPackage, validatePackage } from "./package-utils.mjs";
+import { inspectSampleLayout } from "./sample-layout.mjs";
 
 const scriptFile = fileURLToPath(import.meta.url);
 const scriptDirectory = path.dirname(scriptFile);
@@ -9,6 +10,7 @@ const repositoryRoot = path.resolve(scriptDirectory, "..");
 const argumentsList = process.argv.slice(2);
 const jsonOutput = argumentsList.includes("--json");
 const packagePath = argumentsList.find(argument => !argument.startsWith("--"));
+const layout = inspectSampleLayout(path.join(repositoryRoot, "samples"));
 const result = validatePackage(readPackage(packagePath));
 const visualGuid = result.payload.visual.guid;
 const sampleDirectory = path.join(repositoryRoot, "artifacts", "sample");
@@ -107,6 +109,8 @@ const summary = {
         icon300: icon300Path
     },
     report: {
+        artifactVersion: layout.reportArtifactVersion,
+        definitionVersion: layout.reportDefinitionVersion,
         pbipPath: "Atlyn Pareto.pbip",
         pbirPath: "Atlyn Pareto.Report/definition.pbir",
         reportJsonPath: "Atlyn Pareto.Report/definition/report.json",

@@ -4,6 +4,8 @@
 
 Run all commands below on an authorized local machine. GitHub Actions and other hosted CI/CD are disabled and no workflow is shipped. GitHub is used for source control and review only. Retain local command output, screenshots and measurements with the exact package; no hosted status badge is release evidence.
 
+The approved commercial model uses external Atlyn storefront subscriptions with an ungated runtime and free shared viewing. It requires no runtime licensing work, new keys/signer/AAD/API integration, feature gates or `WebAccess`. Documentation of this decision alone does not require repackaging or a version bump. Preserve sealed artifacts and their historical evidence; keep current business decisions in live documentation. Native assets, the required Microsoft Power BI certified badge and the coordinator's final release gate remain separate.
+
 ## Prerequisites
 
 - Owner-authorized access to this private repository.
@@ -123,7 +125,9 @@ npm run sample
 npm run evidence:quality -- --label final --samples 20 --warmups 3
 ```
 
-`sample` assembles all three authored pages and exact package resources in `artifacts\sample`, then checks resource bytes, model/role bindings, formatting literals, page bounds and public JSON schemas. `sample` assembles all three authored pages and exact package resources in `artifacts\sample`, then checks required entry points (including PBIR `definition\version.json`), resource bytes, model/role bindings, formatting literals, page bounds and public JSON schemas. The first schema inspection downloads public Microsoft schemas into `artifacts\schemas`; cached schema hashes are recorded. `npm run sample:tom` additionally uses already installed Desktop TOM assemblies to deserialize this sample's TMSL `model.bim`, without launching Desktop or installing anything. See [native-preflight safeguards](../samples/README.md#native-preflight-safeguards) for separately identified retry folders. Neither schema nor TOM parsing establishes native open/refresh/render behavior or replaces the required PBIX.
+`sample` validates the source layout before assembly, copies all three authored pages and exact package resources into `artifacts\sample`, then checks required entry points, resource bytes, model/role bindings, formatting literals, page bounds and public JSON schemas. The separately named constants in `scripts\sample-versions.mjs` enforce artifact version **4.0** in `definition.pbir` and report-definition version **2.0.0** in `definition\version.json`; generation and inspection record/check both. A schema-valid definition value of 4.0.0 can still prevent native pages from loading and is rejected.
+
+The first schema inspection downloads public Microsoft schemas into `artifacts\schemas`; cached schema hashes are recorded. `npm run sample:tom` additionally uses already installed Desktop TOM assemblies to deserialize this sample's TMSL `model.bim`, without launching Desktop or installing anything. See [native-preflight safeguards](../samples/README.md#native-preflight-safeguards) for separately identified retry folders. Neither schema nor TOM parsing establishes native open/refresh/render behavior or replaces the required PBIX.
 
 Quality evidence loads the actual archive in local Chromium with network requests blocked. It captures the five required viewport sizes plus dense/long labels, multiple instances, RTL/high contrast, scrolling, loading/empty/invalid/zero/subset/highlight and interaction states. Three unchanged 1366x768 listing candidates come from invented defect/cost/customer scenarios. The report distinguishes synthetic pointer-event coverage from the separate Playwright touchscreen regression.
 

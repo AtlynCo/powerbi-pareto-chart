@@ -2,7 +2,7 @@
 
 An offline Power BI custom visual for ranking **nonnegative, additive contributions** and inspecting cumulative concentration. Descending bars show contribution; the cumulative line and configurable threshold identify a contributor set, including every equally valued category at the threshold boundary.
 
-**Release-quality source: 1.1.0.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
+**Release-quality source: 1.1.1.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
 
 ## Acquisition and shared viewing
 

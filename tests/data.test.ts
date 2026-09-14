@@ -58,3 +58,12 @@ test("binding requires exactly one category and contribution, preserves tooltip 
     view.categorical!.categories!.push(category);
     assert.equal(getBinding(view), undefined);
 });
+
+test("binding returns undefined when either category or contribution is missing", () => {
+    const metadata = { columns: [] };
+    const category = { source: { displayName: "Type", roles: { Category: true } }, values: ["A"] };
+    const contribution = { source: { displayName: "Count", roles: { Contribution: true } }, values: [1] };
+    assert.equal(getBinding({ metadata, categorical: { categories: [category] } }), undefined);
+    assert.equal(getBinding({ metadata, categorical: { values: Object.assign([contribution], { grouped: () => [] }) } }), undefined);
+    assert.equal(getBinding({ metadata, categorical: {} }), undefined);
+});

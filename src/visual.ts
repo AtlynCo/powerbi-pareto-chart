@@ -268,7 +268,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
             element("pre", undefined, notices.components.map(item => `${item.name} ${item.version}\n\n${item.license}`).join("\n\n"))
         );
         if (!this.binding || !this.model) {
-            const columns = this.view?.metadata.columns ?? [];
+            const columns = this.view?.metadata?.columns ?? [];
             const category = columns.some(column => column.roles?.Category);
             const contribution = columns.some(column => column.roles?.Contribution);
             const metadataOnly = category && contribution && !this.view?.categorical;

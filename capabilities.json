@@ -6,7 +6,7 @@
   ],
   "dataViewMappings": [
     {
-      "conditions": [ { "Category": { "min": 1, "max": 1 }, "Contribution": { "min": 1, "max": 1 }, "Tooltips": { "max": 5 } } ],
+      "conditions": [ { "Category": { "max": 1 }, "Contribution": { "max": 1 }, "Tooltips": { "max": 5 } } ],
       "categorical": {
         "categories": { "for": { "in": "Category" }, "dataReductionAlgorithm": { "window": { "count": 10000 } } },
         "values": { "select": [ { "bind": { "to": "Contribution" } }, { "for": { "in": "Tooltips" } } ] }

@@ -4,7 +4,7 @@
     "displayName": "Atlyn Pareto",
     "guid": "atlynPareto18722664651549C392ABF6B1EBA46945",
     "visualClassName": "Visual",
-    "version": "1.1.0.0",
+    "version": "1.1.1.0",
     "description": "Rank nonnegative additive contributions and analyze cumulative concentration with explicit data-universe and threshold semantics.",
     "supportUrl": "https://www.atlynco.com/docs/faq",
     "gitHubUrl": "https://github.com/AtlynCo/powerbi-pareto-chart"

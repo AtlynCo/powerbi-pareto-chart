@@ -37,7 +37,7 @@ For machine-readable integration, the assembly script accepts an optional packag
 
 ```powershell
 node scripts\assemble-sample.mjs
-node scripts\assemble-sample.mjs dist\atlynPareto18722664651549C392ABF6B1EBA46945.1.1.1.0.pbiviz --json
+node scripts\assemble-sample.mjs dist\atlynPareto18722664651549C392ABF6B1EBA46945.1.1.2.0.pbiviz --json
 ```
 
 `artifacts\sample\sample-manifest.json` records the exact package path, SHA-256, report entry points relative to the assembled folder, embedded resource directory, page bindings, and the manual-native-validation requirement. The assembly replaces only the generated `artifacts\sample` folder, not the authored source or source commit.

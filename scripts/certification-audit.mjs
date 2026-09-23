@@ -11,7 +11,7 @@ if (fs.existsSync(".github/workflows")) {
 assert.equal(metadata.externalJS, null);
 assert.equal(metadata.dependencies, null);
 assert.equal(metadata.author.name, "Atlyn");
-assert.equal(metadata.visual.supportUrl, "https://www.atlynco.com/docs/faq");
+assert.equal(metadata.visual.supportUrl, "https://atlynco.github.io/atlyn-powerbi-support/docs/faq/");
 for (const key of ["supportsHighlight", "supportsKeyboardFocus", "supportsLandingPage", "supportsEmptyDataView"]) {
     assert.equal(payload.capabilities[key], true, key);
 }

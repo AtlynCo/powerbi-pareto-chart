@@ -8,7 +8,7 @@
 - [ ] Preserve `UNLICENSED` first-party npm metadata and existing legal status; do not invent a `LICENSE`, public EULA or paid-author enforcement guarantee.
 - [ ] Keep license keys, signer/AAD/API integration, feature gates and runtime licensing requests out of the visual. Do not rebuild or bump the package solely for the commercial-model documentation change.
 - [ ] Owner approves the intended audience, distribution route, and product terms.
-- [ ] Confirm display name Atlyn Pareto, stable GUID `atlynPareto18722664651549C392ABF6B1EBA46945`, visual package version `1.1.1.0`, host API 5.11 normalized as `5.11.0` in manifest/plugin/payload, SDK dependency `powerbi-visuals-api@5.11.1`, and tools `7.2.1`.
+- [ ] Confirm display name Atlyn Pareto, stable GUID `atlynPareto18722664651549C392ABF6B1EBA46945`, visual package version `1.1.2.0`, host API 5.11 normalized as `5.11.0` in manifest/plugin/payload, SDK dependency `powerbi-visuals-api@5.11.1`, and tools `7.2.1`.
 - [ ] Record source ref/commit, lockfile, Node/npm versions, OS, and exact build commands.
 - [ ] Run `npm run release:verify` from committed, clean source; retain static checks, independent unit/oracle tests, official package audit, actual-package browser tests, license/advisory checks, sample inspection and performance/capture logs.
 - [ ] Record the exact SHA-256, filename, bytes, privileges, locales, archive entries, tools and source provenance; do not rebuild afterward without repeating package-dependent evidence.
@@ -33,7 +33,7 @@
 
 ## Owner-approved public materials
 
-- [x] Coordinator approved author name `Atlyn`, email `atlyn.help@gmail.com`, support URL `https://www.atlynco.com/docs/faq`, and private source URL `https://github.com/AtlynCo/powerbi-pareto-chart`.
+- [x] Coordinator approved author name `Atlyn`, email `atlyn.help@gmail.com`, support URL `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`, and private source URL `https://github.com/AtlynCo/powerbi-pareto-chart`.
 - [x] Coordinator verified the FAQ content. This is not an AppSource/Microsoft approval.
 - [ ] Manually verify support responsiveness and the operational product support process; recheck FAQ access without repository membership/sign-in at release time.
 - [ ] Publish/approve an accurate public privacy notice and appropriate licensing terms/EULA. The repository's `UNLICENSED` metadata is not an end-user agreement.

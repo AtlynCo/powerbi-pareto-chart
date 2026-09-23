@@ -20,7 +20,7 @@ export function readPackage(packagePath) {
 export function validatePackage(result) {
     const { metadata, payload, entries, manifest } = result;
     assert.equal(payload.visual.guid, "atlynPareto18722664651549C392ABF6B1EBA46945");
-    assert.equal(payload.visual.version, "1.1.1.0");
+    assert.equal(payload.visual.version, "1.1.2.0");
     assert.equal(payload.visual.version, metadata.visual.version);
     assert.equal(payload.visual.displayName, "Atlyn Pareto");
     assert.equal(payload.apiVersion, "5.11.0");

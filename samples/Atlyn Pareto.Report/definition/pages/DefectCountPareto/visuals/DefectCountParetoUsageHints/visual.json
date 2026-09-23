@@ -1,0 +1,57 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "DefectCountParetoUsageHints",
+  "position": {
+    "x": 48,
+    "y": 48,
+    "z": 1000,
+    "width": 1184,
+    "height": 76,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "How to use this visual — ",
+                    "textStyle": { "fontFamily": "Segoe UI", "fontSize": "11pt", "fontWeight": "bold" }
+                  },
+                  {
+                    "value": "bound to Defects[Category], [Total defects], tooltip [Total rework minutes].",
+                    "textStyle": { "fontFamily": "Segoe UI", "fontSize": "10pt", "fontStyle": "italic" }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Required fields: Category (1) and Contribution (1 measure); optional Tooltips (up to 5). Click a bar to cross-filter this page; right-click a bar for the context menu. Use the Analysis pane's Threshold % and Incomplete-data policy to change the 80% cutoff, and Maximum categories per page with the Next/Previous buttons below the chart to page through more than 100,000 categories.",
+                    "textStyle": { "fontFamily": "Segoe UI", "fontSize": "10pt" }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [ { "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } } ],
+      "background": [ { "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } } ],
+      "border": [ { "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } } ],
+      "dropShadow": [ { "properties": { "show": { "expr": { "Literal": { "Value": "false" } } } } } ]
+    }
+  },
+  "annotations": [
+    {
+      "name": "purpose",
+      "value": "Policy 1180.2.3.1 usage hint: required field roles, selection/context-menu interaction, filter/threshold controls, and the 100,000-category pagination limit."
+    }
+  ]
+}

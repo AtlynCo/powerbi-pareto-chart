@@ -32,7 +32,7 @@ This copy is subject to final owner approval and the current Partner Center fiel
 
 | Field or decision | Current status |
 | --- | --- |
-| Product/contact metadata | Approved: Atlyn; `atlyn.help@gmail.com`; `https://www.atlynco.com/docs/faq` |
+| Product/contact metadata | Approved: Atlyn; `atlyn.help@gmail.com`; `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/` |
 | Public support operations | Responsiveness and release-time anonymous access require owner/coordinator confirmation |
 | Public privacy URL and notice | Owner approval/publication required; internal privacy notes are not a published notice |
 | Acquisition and runtime architecture | Approved: existing Atlyn storefront subscriptions, ungated runtime, free shared viewing; no paid-author enforcement |

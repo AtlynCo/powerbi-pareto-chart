@@ -18,7 +18,7 @@ This document is a **technical description for owner review**, not an approved p
 
 The repository at `https://github.com/AtlynCo/powerbi-pareto-chart` is **private**. Repository issues are a maintainer-only workflow for authorized collaborators, not a public support channel accessible to all potential users.
 
-The coordinator approved the package metadata: author **Atlyn**, contact **`atlyn.help@gmail.com`**, support URL **`https://www.atlynco.com/docs/faq`**, and the private GitHub URL above. The coordinator also verified the FAQ content. This records metadata approval and content review, not Microsoft/AppSource acceptance or broader legal approval.
+The coordinator approved the package metadata: author **Atlyn**, contact **`atlyn.help@gmail.com`**, support URL **`https://atlynco.github.io/atlyn-powerbi-support/docs/faq/`**, and the private GitHub URL above. The coordinator also verified the FAQ content (independently confirmed anonymous HTTPS 200 on the public AtlynCo Pages site, along with its linked `legal/terms/` and `legal/privacy/` pages). This records metadata approval and content review, not Microsoft/AppSource acceptance or broader legal approval.
 
 Support responsiveness remains a manual release check: confirm that the published contact route is monitored and can handle product questions. Recheck public unauthenticated FAQ access when preparing the release. No response-time or availability commitment is made here.
 

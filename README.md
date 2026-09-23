@@ -2,7 +2,7 @@
 
 An offline Power BI custom visual for ranking **nonnegative, additive contributions** and inspecting cumulative concentration. Descending bars show contribution; the cumulative line and configurable threshold identify a contributor set, including every equally valued category at the threshold boundary.
 
-**Release-quality source: 1.1.1.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
+**Release-quality source: 1.1.2.0.** This private repository is not an AppSource listing, a Microsoft-certified visual, or an open-source license grant. Automated checks and manual host validation must be recorded for the exact release artifact; this README does not attest that they passed.
 
 ## Acquisition and shared viewing
 
@@ -76,7 +76,7 @@ For a committed final baseline, `npm run release:verify` collects sequential loc
 | Formatting model utility | `7.1.0` |
 | Formatting utility | `7.0.0` |
 | Author | Atlyn (`atlyn.help@gmail.com`) |
-| Support URL | `https://www.atlynco.com/docs/faq` |
+| Support URL | `https://atlynco.github.io/atlyn-powerbi-support/docs/faq/` |
 | Source URL (private) | `https://github.com/AtlynCo/powerbi-pareto-chart` |
 
 ## Documentation and release gates

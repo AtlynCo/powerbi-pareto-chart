@@ -81,6 +81,38 @@ test("sample validation rejects missing PBIR version metadata even when remainin
     assert.throws(() => inspectSampleLayout(root), /do not mix a TMDL definition/);
 });
 
+test("each authored page pairs the Pareto visual with a concise usage-hint textbox (policy 1180.2.3.1)", () => {
+    const pages = JSON.parse(fs.readFileSync(path.join(samples, "Atlyn Pareto.Report", "definition", "pages", "pages.json"), "utf8"));
+    assert.equal(pages.pageOrder.length, 3);
+    for (const pageName of pages.pageOrder) {
+        const visualsRoot = path.join(samples, "Atlyn Pareto.Report", "definition", "pages", pageName, "visuals");
+        const visualNames = fs.readdirSync(visualsRoot);
+        assert.equal(visualNames.length, 2, `Expected the Pareto visual plus one usage-hint textbox on ${pageName}`);
+        const visuals = visualNames.map(name => JSON.parse(fs.readFileSync(path.join(visualsRoot, name, "visual.json"), "utf8")));
+        const chart = visuals.find(candidate => candidate.visual.visualType.startsWith("atlynPareto"));
+        assert.ok(chart, `Missing Pareto visual on ${pageName}`);
+        assert.ok(chart.position.width > 0 && chart.position.height > 0);
+        const hint = visuals.find(candidate => candidate.visual.visualType === "textbox");
+        assert.ok(hint, `Missing usage-hint textbox on ${pageName}`);
+        assert.ok(hint.position.width > 0 && hint.position.height > 0);
+        assert.ok(hint.position.y + hint.position.height <= chart.position.y, `Hint textbox must not overlap the chart on ${pageName}`);
+        assert.ok(chart.position.y - (hint.position.y + hint.position.height) <= 16, `Hint textbox should sit just above the chart on ${pageName}`);
+        const runs: { value: string }[] = hint.visual.objects.general[0].properties.paragraphs
+            .flatMap((paragraph: { textRuns: { value: string }[] }) => paragraph.textRuns);
+        const text = runs.map(run => run.value).join(" ");
+        // The hint must document required field roles, selection/context-menu interaction,
+        // the threshold filter, and the visual's category pagination limit.
+        assert.match(text, /Category \(1\)/);
+        assert.match(text, /Contribution \(1 measure\)/);
+        assert.match(text, /Tooltips \(up to 5\)/);
+        assert.match(text, /cross-filter/);
+        assert.match(text, /context menu/i);
+        assert.match(text, /Threshold %/);
+        assert.match(text, /Maximum categories per page/);
+        assert.match(text, /100,000 categories/);
+    }
+});
+
 test("PBIR artifact 4.0 and definition 2.0.0 remain distinct and reject the native empty-report regression", t => {
     assert.equal(PBIR_ARTIFACT_VERSION, "4.0");
     assert.equal(PBIR_DEFINITION_VERSION, "2.0.0");

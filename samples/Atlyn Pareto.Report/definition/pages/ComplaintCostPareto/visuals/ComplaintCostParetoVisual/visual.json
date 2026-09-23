@@ -3,10 +3,10 @@
   "name": "ComplaintCostParetoVisual",
   "position": {
     "x": 48,
-    "y": 48,
+    "y": 132,
     "z": 0,
     "width": 1184,
-    "height": 624,
+    "height": 540,
     "tabOrder": 1
   },
   "visual": {

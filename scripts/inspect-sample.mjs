@@ -33,9 +33,21 @@ for (const pageName of pages.pageOrder) {
     const pageDirectory = path.join(reportRoot, "definition", "pages", pageName);
     const page = JSON.parse(fs.readFileSync(path.join(pageDirectory, "page.json"), "utf8"));
     const visuals = fs.readdirSync(path.join(pageDirectory, "visuals"));
-    assert.equal(visuals.length, 1);
-    const item = JSON.parse(fs.readFileSync(path.join(pageDirectory, "visuals", visuals[0], "visual.json"), "utf8"));
+    assert.equal(visuals.length, 2, `Expected the Pareto visual plus one usage-hint textbox on ${pageName}`);
+    const visualJsons = visuals.map(name => JSON.parse(fs.readFileSync(path.join(pageDirectory, "visuals", name, "visual.json"), "utf8")));
+    const item = visualJsons.find(candidate => candidate.visual.visualType === packaged.payload.visual.guid);
+    assert.ok(item, `Missing Pareto visual on ${pageName}`);
     assert.equal(item.visual.visualType, packaged.payload.visual.guid);
+    const hint = visualJsons.find(candidate => candidate.visual.visualType === "textbox");
+    assert.ok(hint, `Missing usage-hint textbox on ${pageName}`);
+    const hintText = hint.visual.objects.general[0].properties.paragraphs
+        .flatMap(paragraph => paragraph.textRuns.map(run => run.value))
+        .join(" ");
+    assert.match(hintText, /Category/, `Usage hint on ${pageName} must name the required Category field`);
+    assert.match(hintText, /Contribution/, `Usage hint on ${pageName} must name the required Contribution field`);
+    assert.match(hintText, /context menu/i, `Usage hint on ${pageName} must mention the context menu`);
+    assert.match(hintText, /Threshold/i, `Usage hint on ${pageName} must mention the Threshold filter`);
+    assert.match(hintText, /100,000/, `Usage hint on ${pageName} must mention the category pagination limit`);
     assert.ok(item.position.width > 0 && item.position.height > 0);
     assert.ok(item.position.x + item.position.width <= page.width && item.position.y + item.position.height <= page.height);
     for (const role of ["Category", "Contribution", "Tooltips"]) {

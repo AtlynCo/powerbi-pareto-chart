@@ -56,6 +56,8 @@ The report includes three PBIR pages, each already bound to the Atlyn Pareto vis
 
 Each page uses threshold **80%**, incomplete-data policy **withhold**, saved rank **1**, page size **30**, and the visual's own built-in table.
 
+Each page also carries a small, no-chrome **textbox visual** directly above the chart with concise, real usage hints (policy 1180.2.3.1): the page's required field roles (`Category` (1), `Contribution` (1 measure), optional `Tooltips` up to 5), how to select/cross-filter and open the context menu, how to change the 80% cutoff via the Analysis pane's **Threshold %** and **Incomplete data** properties, and how to page through more than the visual's 100,000-category limit using **Maximum categories per page** and the chart's own Next/Previous controls. `scripts/inspect-sample.mjs` and `tests/samples.test.ts` both assert every page has exactly one Pareto visual and one usage-hint textbox, and that the hint text mentions each of those points.
+
 ## Open and verify in Desktop
 
 1. Use a current **Power BI Desktop for Windows** with project support. Microsoft's documentation currently marks PBIP and PBIR as preview features.

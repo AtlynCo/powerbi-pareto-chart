@@ -1,6 +1,6 @@
 param(
     [string]$SampleDirectory = (Join-Path $PSScriptRoot '..\artifacts\sample'),
-    [string]$EvidencePath = (Join-Path $PSScriptRoot '..\artifacts\sample-tmdl-preflight.json')
+    [string]$EvidencePath = (Join-Path $PSScriptRoot '..\artifacts\sample-tmdl-structural.json')
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -75,12 +75,13 @@ $evidence = @{
     status = 'passed'
     checkedAtUtc = [DateTimeOffset]::UtcNow.ToString('o')
     packageSha256 = $manifest.package.sha256
+    method = 'Regex/text structural validation only (no TOM parser). See "npm run sample:tom" for a real Microsoft TOM TmdlSerializer parse.'
     modelFormat = 'TMDL definition folder'
     compatibilityLevel = 1601
     tables = $tables
-    boundary = 'Read-only TMDL structural validation only. It does not establish native Desktop open, refresh, render, export or host acceptance.'
+    boundary = 'Read-only TMDL structural validation only. It does not establish native Desktop open, refresh, render, export or host acceptance, and it is not a substitute for a real TOM parse.'
 }
 $output = [System.IO.Path]::GetFullPath($EvidencePath)
 [System.IO.Directory]::CreateDirectory([System.IO.Path]::GetDirectoryName($output)) | Out-Null
 [System.IO.File]::WriteAllText($output, ($evidence | ConvertTo-Json -Depth 8) + "`n")
-Write-Output "TMDL preflight validated 3 tables / 9 columns / 6 measures / 3 embedded M partitions. Evidence: $output"
+Write-Output "TMDL structural validation (regex/text only, not a TOM parse) passed for 3 tables / 9 columns / 6 measures / 3 embedded M partitions. Evidence: $output"

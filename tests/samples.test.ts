@@ -75,11 +75,14 @@ test("CustomerRevenue uses a non-cyclic typed M result and TMDL omits unsupporte
 });
 
 test("TMDL model table references remain root-level for TOM compatibility", t => {
-    const modelPath = path.join(samples, "Atlyn Pareto.SemanticModel", "definition", "model.tmdl");
+    fs.mkdirSync(path.resolve("artifacts"), { recursive: true });
+    const root = fs.mkdtempSync(path.resolve("artifacts", "sample-model-"));
+    t.after(() => fs.rmSync(root, { recursive: true }));
+    fs.cpSync(samples, root, { recursive: true });
+    const modelPath = path.join(root, "Atlyn Pareto.SemanticModel", "definition", "model.tmdl");
     const original = fs.readFileSync(modelPath, "utf8");
-    t.after(() => fs.writeFileSync(modelPath, original));
     fs.writeFileSync(modelPath, original.replace(/^ref table /gm, "\tref table "));
-    assert.throws(() => readSampleModel(samples), /root-level TMDL model reference|table references must be root-level/);
+    assert.throws(() => readSampleModel(root), /root-level TMDL model reference|table references must be root-level/);
 });
 
 test("sample validation rejects missing PBIR version metadata even when remaining JSON is valid", t => {

@@ -192,15 +192,17 @@ The previous definition value `4.0.0` passed JSON schema validation. On 2026-09-
 
 The layout validator explicitly requires both version files and the complete TMDL model definition before schema validation, since validating only existing files cannot detect omissions. Regressions reject a missing version file, definition versions `4.0.0`/`4.0`, mistakenly swapped artifact versions, and a legacy `model.bim` fallback.
 
-On a machine with Power BI Desktop already installed, its official TOM assemblies can deserialize the model without launching Desktop, connecting to a server, installing dependencies or executing the embedded M/DAX:
+On a machine with the .NET SDK installed, `npm run sample:tom` performs a genuine Microsoft TOM parse (`Microsoft.AnalysisServices.Tabular.TmdlSerializer.DeserializeDatabaseFromFolder`, via the public `Microsoft.AnalysisServices.retail.amd64` NuGet package and `tools\tmdl-preflight`) without launching Desktop, connecting to a server, or executing the embedded M/DAX:
 
 ```powershell
 npm run sample
 npm run sample:tom
 ```
 
-The preflight command writes `artifacts\sample-tmdl-preflight.json` with the package hash and structural evidence for the three tables, their columns/measures, and embedded M partitions. **This structural check is not native report opening, refresh, rendering, export or acceptance evidence.**
+`npm run sample:tom` writes `artifacts\sample-tmdl-tom-preflight.json` with the package hash, TOM assembly version, and the real Database object's compatibility level, tables, columns, measures, and partitions. It fails explicitly (non-zero exit) if the .NET SDK or the TOM package are unavailable, or if the TMDL folder does not parse or does not match the expected shape — it never silently falls back to a weaker check. **It is still not native report opening, refresh, rendering, export or acceptance evidence.**
 
-For a provisional native retry, copy the assembled sample into a new, separately named directory under `artifacts` without overwriting any sealed release. Inspect that directory with `node scripts\inspect-sample.mjs <retry-directory>`, then `npm run sample:tom -- -SampleDirectory <retry-directory> -EvidencePath <retry-directory>\tom-preflight.json`. This records layout/schema/resource and TOM evidence alongside the retry. Keep the existing package hash explicit, preserve the original sealed bundle and certification ref, and let the coordinator operate the Desktop UI. A retry sample is not a new paid/submission package.
+`npm run sample:structural` performs a faster, regex/text-only structural check (`scripts\inspect-sample-model-structural.ps1`, requires only PowerShell) and writes `artifacts\sample-tmdl-structural.json`. This is a convenience check, not a substitute for the real TOM parse above.
+
+For a provisional native retry, copy the assembled sample into a new, separately named directory under `artifacts` without overwriting any sealed release. Inspect that directory with `node scripts\inspect-sample.mjs <retry-directory>`, then `npm run sample:tom -- <retry-directory> <retry-directory>\tom-preflight.json`. This records layout/schema/resource and real TOM evidence alongside the retry. Keep the existing package hash explicit, preserve the original sealed bundle and certification ref, and let the coordinator operate the Desktop UI. A retry sample is not a new paid/submission package.
 
 The owner has approved external storefront subscriptions with the existing ungated renderer and free shared viewing. No separate runtime entitlement integration or licensing-driven package rebuild is pending. The provisional/native evidence boundary above remains: the coordinator must still supply real-host/PBIX assets and obtain the additionally required Microsoft Power BI certified badge before claiming certification.

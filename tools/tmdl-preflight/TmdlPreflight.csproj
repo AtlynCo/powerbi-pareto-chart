@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AssemblyName>TmdlPreflight</AssemblyName>
+    <RootNamespace>AtlynPareto.TmdlPreflight</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Public NuGet package containing the real Microsoft Analysis Services Tabular Object
+         Model, including TmdlSerializer.DeserializeDatabaseFromFolder. This performs a genuine
+         TOM parse of the TMDL definition folder, not a regex/text approximation. -->
+    <PackageReference Include="Microsoft.AnalysisServices.retail.amd64" Version="19.84.1" />
+  </ItemGroup>
+
+</Project>

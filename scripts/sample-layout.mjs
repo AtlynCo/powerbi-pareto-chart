@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "./sample-versions.mjs";
+import { readSampleModel } from "./sample-model.mjs";
 
 export function inspectSampleLayout(root) {
     const required = [
@@ -11,7 +12,11 @@ export function inspectSampleLayout(root) {
         "Atlyn Pareto.Report/definition/version.json",
         "Atlyn Pareto.Report/definition/pages/pages.json",
         "Atlyn Pareto.SemanticModel/definition.pbism",
-        "Atlyn Pareto.SemanticModel/model.bim"
+        "Atlyn Pareto.SemanticModel/definition/database.tmdl",
+        "Atlyn Pareto.SemanticModel/definition/model.tmdl",
+        "Atlyn Pareto.SemanticModel/definition/tables/Defects.tmdl",
+        "Atlyn Pareto.SemanticModel/definition/tables/Complaints.tmdl",
+        "Atlyn Pareto.SemanticModel/definition/tables/CustomerRevenue.tmdl"
     ];
     for (const relative of required) {
         assert.ok(fs.existsSync(path.join(root, relative)), `Required sample file missing: ${relative}`);
@@ -22,8 +27,7 @@ export function inspectSampleLayout(root) {
     const version = JSON.parse(fs.readFileSync(path.join(root, "Atlyn Pareto.Report/definition/version.json"), "utf8"));
     assert.equal(version.version, PBIR_DEFINITION_VERSION, `Expected PBIR definition version ${PBIR_DEFINITION_VERSION}`);
     assert.equal(version.$schema, "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json");
-    const modelRoot = path.join(root, "Atlyn Pareto.SemanticModel");
-    assert.ok(!fs.readdirSync(modelRoot, { recursive: true }).some(file => file.endsWith(".tmdl")),
-        "This sample uses model.bim (TMSL); do not mix a TMDL definition into the same semantic model");
-    return { required, modelFormat: "TMSL", reportArtifactVersion: artifact.version, reportDefinitionVersion: version.version };
+    const model = readSampleModel(root);
+    assert.deepEqual(model.tables.map(table => table.name).sort(), ["Complaints", "CustomerRevenue", "Defects"]);
+    return { required, modelFormat: "TMDL", reportArtifactVersion: artifact.version, reportDefinitionVersion: version.version };
 }

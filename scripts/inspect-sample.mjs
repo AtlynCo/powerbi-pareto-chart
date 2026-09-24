@@ -5,6 +5,7 @@ import { createHash } from "node:crypto";
 import Ajv from "ajv";
 import { readPackage, validatePackage } from "./package-utils.mjs";
 import { inspectSampleLayout } from "./sample-layout.mjs";
+import { readSampleModel } from "./sample-model.mjs";
 
 const root = path.resolve(process.argv[2] ?? path.join("artifacts", "sample"));
 const layout = inspectSampleLayout(root);
@@ -26,7 +27,7 @@ assert.deepEqual(fs.readFileSync(path.join(resourceRoot, "package.json")), Buffe
 assert.deepEqual(fs.readFileSync(path.join(resourceRoot, "resources", resource.items[0].path)),
     Buffer.from(packaged.entries[packaged.manifest.resources[0].file]));
 
-const model = read("Atlyn Pareto.SemanticModel/model.bim").model;
+const model = readSampleModel(root);
 const pages = read("Atlyn Pareto.Report/definition/pages/pages.json");
 assert.equal(pages.pageOrder.length, 3);
 for (const pageName of pages.pageOrder) {
@@ -56,7 +57,7 @@ for (const pageName of pages.pageOrder) {
         const field = projections[0].field[role === "Category" ? "Column" : "Measure"];
         const table = model.tables.find(table => table.name === field.Expression.SourceRef.Entity);
         assert.ok(table, `Missing bound table for ${pageName}/${role}`);
-        assert.ok(table[role === "Category" ? "columns" : "measures"].some(item => item.name === field.Property));
+        assert.ok(table[role === "Category" ? "columns" : "measures"].includes(field.Property));
     }
     const properties = item.visual.objects.analysis[0].properties;
     assert.equal(properties.threshold.expr.Literal.Value, "80D");

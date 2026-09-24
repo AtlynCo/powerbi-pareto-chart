@@ -5,10 +5,11 @@ import path from "node:path";
 import { analyze } from "../src/model";
 import { canonicalCategory } from "../src/data";
 import { inspectSampleLayout } from "../scripts/sample-layout.mjs";
+import { readSampleModel } from "../scripts/sample-model.mjs";
 import { PBIR_ARTIFACT_VERSION, PBIR_DEFINITION_VERSION } from "../scripts/sample-versions.mjs";
 
 const samples = path.resolve("samples");
-const database = JSON.parse(fs.readFileSync(path.join(samples, "Atlyn Pareto.SemanticModel", "model.bim"), "utf8"));
+const database = readSampleModel(samples);
 
 for (const scenario of [
     { file: "defect-count.csv", table: "Defects", total: 200, count: 9, crossing: "Packaging", cumulative: 160, tooltipTotal: 576, crossingRank: 4, included: 5, includedShare: 0.9 },
@@ -21,11 +22,9 @@ for (const scenario of [
             const [category, value, tooltip] = line.split(",");
             return [category || null, Number(value), Number(tooltip)];
         });
-        const table = database.model.tables.find((item: { name: string }) => item.name === scenario.table);
-        assert.equal(table.partitions.length, 1);
-        assert.equal(table.partitions[0].mode, "import");
-        assert.equal(table.partitions[0].source.type, "m");
-        const expression: string = table.partitions[0].source.expression.join("\n");
+        const table = database.tables.find((item: { name: string }) => item.name === scenario.table);
+        assert.ok(table);
+        const expression: string = table.source;
         assert.match(expression, /#table\(/);
         assert.doesNotMatch(expression, /(?:File|Web|Sql)\.Contents|https?:|[A-Z]:\\/i);
         const embedded = [...expression.matchAll(/^\s*\{((".*"|null),\s*\d+(?:\.\d+)?,\s*\d+)\},?\s*$/gm)]
@@ -48,7 +47,7 @@ for (const scenario of [
 }
 
 test("PBIP references real local report and model definitions, not cached or remote data", () => {
-    assert.equal(inspectSampleLayout(samples).modelFormat, "TMSL");
+    assert.equal(inspectSampleLayout(samples).modelFormat, "TMDL");
     const project = JSON.parse(fs.readFileSync(path.join(samples, "Atlyn Pareto.pbip"), "utf8"));
     assert.equal(project.artifacts.length, 1);
     const reportPath = path.resolve(samples, project.artifacts[0].report.path);
@@ -58,9 +57,32 @@ test("PBIP references real local report and model definitions, not cached or rem
     const modelPath = path.resolve(reportPath, report.datasetReference.byPath.path);
     assert.ok(modelPath.startsWith(samples + path.sep));
     assert.ok(fs.existsSync(path.join(modelPath, "definition.pbism")));
-    assert.ok(fs.existsSync(path.join(modelPath, "model.bim")));
-    assert.equal(database.compatibilityLevel, 1600);
-    assert.equal(database.model.tables.length, 3);
+    assert.ok(fs.existsSync(path.join(modelPath, "definition", "database.tmdl")));
+    assert.ok(!fs.existsSync(path.join(modelPath, "model.bim")));
+    assert.equal(database.compatibility, 1601);
+    assert.equal(database.tables.length, 3);
+});
+
+test("CustomerRevenue uses a non-cyclic typed M result and TMDL omits unsupported descriptions", () => {
+    const customerRevenue = database.tables.find((table: { name: string }) => table.name === "CustomerRevenue");
+    assert.ok(customerRevenue);
+    assert.match(customerRevenue.source, /type table \[Category = text, RevenueUSD = Currency\.Type, InvoiceCount = Int64\.Type\]/);
+    assert.match(customerRevenue.source, /\bin\s+Source\s*```/s);
+    assert.doesNotMatch(customerRevenue.source, /Table\.TransformColumnTypes\s*\(\s*Source/);
+    for (const table of database.tables) {
+        assert.doesNotMatch(table.source, /^\s+description:/m);
+    }
+});
+
+test("TMDL model table references remain root-level for TOM compatibility", t => {
+    fs.mkdirSync(path.resolve("artifacts"), { recursive: true });
+    const root = fs.mkdtempSync(path.resolve("artifacts", "sample-model-"));
+    t.after(() => fs.rmSync(root, { recursive: true }));
+    fs.cpSync(samples, root, { recursive: true });
+    const modelPath = path.join(root, "Atlyn Pareto.SemanticModel", "definition", "model.tmdl");
+    const original = fs.readFileSync(modelPath, "utf8");
+    fs.writeFileSync(modelPath, original.replace(/^ref table /gm, "\tref table "));
+    assert.throws(() => readSampleModel(root), /root-level TMDL model reference|table references must be root-level/);
 });
 
 test("sample validation rejects missing PBIR version metadata even when remaining JSON is valid", t => {
@@ -77,8 +99,8 @@ test("sample validation rejects missing PBIR version metadata even when remainin
     assert.throws(() => inspectSampleLayout(root), /Expected PBIR definition version 2\.0\.0/);
     fs.writeFileSync(versionFile, versionBytes);
     inspectSampleLayout(root);
-    fs.writeFileSync(path.join(root, "Atlyn Pareto.SemanticModel", "model.tmdl"), "model Model\n    ref table Defects\n");
-    assert.throws(() => inspectSampleLayout(root), /do not mix a TMDL definition/);
+    fs.writeFileSync(path.join(root, "Atlyn Pareto.SemanticModel", "model.bim"), "{}");
+    assert.throws(() => inspectSampleLayout(root), /must not retain the legacy model\.bim/);
 });
 
 test("each authored page pairs the Pareto visual with a concise usage-hint textbox (policy 1180.2.3.1)", () => {

@@ -1,0 +1,46 @@
+table Defects
+
+	column Category
+		dataType: string
+		sourceColumn: Category
+		summarizeBy: none
+
+	column DefectCount
+		dataType: int64
+		formatString: #,0
+		sourceColumn: DefectCount
+		summarizeBy: sum
+
+	column ReworkMinutes
+		dataType: int64
+		formatString: #,0
+		sourceColumn: ReworkMinutes
+		summarizeBy: sum
+
+	measure 'Total defects' = SUM(Defects[DefectCount])
+		formatString: #,0
+
+	measure 'Total rework minutes' = SUM(Defects[ReworkMinutes])
+		formatString: #,0
+
+	partition Defects = m
+		mode: import
+		source = ```
+			let
+			    Source = #table(
+			        type table [Category = nullable text, DefectCount = Int64.Type, ReworkMinutes = Int64.Type],
+			        {
+			            {"Packaging", 20, 50},
+			            {"Design", 70, 210},
+			            {"Surface", 20, 60},
+			            {"Assembly", 50, 150},
+			            {"Labeling", 20, 40},
+			            {"Fastener", 10, 30},
+			            {"Calibration", 6, 24},
+			            {null, 4, 12},
+			            {"Documentation", 0, 0}
+			        }
+			    )
+			in
+			    Source
+			```

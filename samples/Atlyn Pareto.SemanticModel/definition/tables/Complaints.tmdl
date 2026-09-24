@@ -1,0 +1,45 @@
+table Complaints
+
+	column Category
+		dataType: string
+		sourceColumn: Category
+		summarizeBy: none
+
+	column ComplaintCostUSD
+		dataType: decimal
+		formatString: "$"#,0.00
+		sourceColumn: ComplaintCostUSD
+		summarizeBy: sum
+
+	column ComplaintCount
+		dataType: int64
+		formatString: #,0
+		sourceColumn: ComplaintCount
+		summarizeBy: sum
+
+	measure 'Total complaint cost' = SUM(Complaints[ComplaintCostUSD])
+		formatString: "$"#,0.00
+
+	measure 'Total complaints' = SUM(Complaints[ComplaintCount])
+		formatString: #,0
+
+	partition Complaints = m
+		mode: import
+		source = ```
+			let
+			    Source = #table(
+			        type table [Category = text, ComplaintCostUSD = Currency.Type, ComplaintCount = Int64.Type],
+			        {
+			            {"Support", 900, 9},
+			            {"Delivery", 2500, 25},
+			            {"Billing", 3200, 32},
+			            {"Returns", 900, 9},
+			            {"Product quality", 1500, 15},
+			            {"Account", 400, 4},
+			            {"Checkout", 600, 6},
+			            {"Warranty", 0, 0}
+			        }
+			    )
+			in
+			    Source
+			```

@@ -1,76 +1,86 @@
 param(
     [string]$SampleDirectory = (Join-Path $PSScriptRoot '..\artifacts\sample'),
-    [string]$EvidencePath = (Join-Path $PSScriptRoot '..\artifacts\sample-tom-preflight.json'),
-    [string]$DesktopBin = "${env:ProgramFiles}\Microsoft Power BI Desktop\bin"
+    [string]$EvidencePath = (Join-Path $PSScriptRoot '..\artifacts\sample-tmdl-preflight.json')
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
 $sampleRoot = (Resolve-Path -LiteralPath $SampleDirectory).Path
-$modelPath = Join-Path $sampleRoot 'Atlyn Pareto.SemanticModel\model.bim'
+$modelRoot = Join-Path $sampleRoot 'Atlyn Pareto.SemanticModel'
+$definitionRoot = Join-Path $modelRoot 'definition'
+$tablesRoot = Join-Path $definitionRoot 'tables'
 $manifest = Get-Content -LiteralPath (Join-Path $sampleRoot 'sample-manifest.json') -Raw | ConvertFrom-Json
-$assemblies = @(
-    'Microsoft.AnalysisServices.Server.Core.dll',
-    'Microsoft.AnalysisServices.Server.Tabular.dll',
-    'Microsoft.AnalysisServices.Server.Tabular.Json.dll'
-)
-$assemblyEvidence = foreach ($name in $assemblies) {
-    $file = Join-Path $DesktopBin $name
-    if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
-        throw "Installed Desktop TOM assembly missing: $file. This command never installs or restores dependencies."
+
+if (Test-Path -LiteralPath (Join-Path $modelRoot 'model.bim')) {
+    throw 'Legacy model.bim must not coexist with the Desktop-ready TMDL semantic model.'
+}
+
+$database = Get-Content -LiteralPath (Join-Path $definitionRoot 'database.tmdl') -Raw
+if ($database -notmatch '(?m)^\s*compatibilityLevel:\s*1601\s*$' -or $database -notmatch '(?m)^database\s*$') {
+    throw 'TMDL database must be anonymous and declare compatibility level 1601.'
+}
+
+$model = Get-Content -LiteralPath (Join-Path $definitionRoot 'model.tmdl') -Raw
+if ($model -notmatch '(?m)^\s*model Model\s*$' -or $model -match 'PBI_QueryOrder') {
+    throw 'TMDL model metadata must omit the unsupported PBI_QueryOrder annotation.'
+}
+foreach ($tableName in @('Defects', 'Complaints', 'CustomerRevenue')) {
+    if ($model -notmatch "(?m)^ref table $tableName\s*$") {
+        throw "TMDL model reference missing for $tableName."
     }
-    Add-Type -Path $file
+}
+if ($model -match '(?m)^[ \t]+ref table ') {
+    throw 'TMDL model table references must be root-level.'
+}
+
+$expected = @{
+    Defects = @{ columns = @('Category', 'DefectCount', 'ReworkMinutes'); measures = @('Total defects', 'Total rework minutes') }
+    Complaints = @{ columns = @('Category', 'ComplaintCostUSD', 'ComplaintCount'); measures = @('Total complaint cost', 'Total complaints') }
+    CustomerRevenue = @{ columns = @('Category', 'RevenueUSD', 'InvoiceCount'); measures = @('Total customer revenue', 'Total invoices') }
+}
+
+$tables = foreach ($tableName in $expected.Keys) {
+    $tablePath = Join-Path $tablesRoot "$tableName.tmdl"
+    $content = Get-Content -LiteralPath $tablePath -Raw
+    if ($content -match '(?m)^\s+description:') { throw "Unsupported TMDL description property found in $tableName." }
+    if ($content -notmatch "(?m)^\s*table $tableName\s*$") { throw "TMDL table header missing for $tableName." }
+    if ($content -notmatch "(?m)^\s*partition $tableName = m\s*$" -or
+        $content -notmatch "(?m)^\s*mode: import\s*$" -or
+        $content -notmatch '#table\(') { throw "Embedded Import M partition missing for $tableName." }
+    if ($tableName -eq 'CustomerRevenue' -and
+        ($content -notmatch 'type table \[Category = text, RevenueUSD = Currency\.Type, InvoiceCount = Int64\.Type\]' -or
+         $content -notmatch '(?s)\bin\s+Source\s*```' -or
+         $content -match 'Table\.TransformColumnTypes\s*\(\s*Source')) {
+        throw 'CustomerRevenue must use a self-contained typed #table source without a cyclic transform.'
+    }
+    if ($content -match '(?:File|Web|Sql)\.Contents|https?:|[A-Z]:\\') {
+        throw "External data source found in $tableName."
+    }
+    foreach ($column in $expected[$tableName].columns) {
+        if ($content -notmatch "(?m)^\s*column $column\s*$") { throw "Column $column missing from $tableName." }
+    }
+    foreach ($measure in $expected[$tableName].measures) {
+        if ($content -notmatch "(?m)^\s*measure '$([regex]::Escape($measure))' =") { throw "Measure $measure missing from $tableName." }
+    }
     @{
-        filename = $name
-        version = (Get-Item -LiteralPath $file).VersionInfo.FileVersion
-        sha256 = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
+        name = $tableName
+        columns = $expected[$tableName].columns
+        measures = $expected[$tableName].measures
+        partitions = 1
+        source = 'embedded #table M'
     }
 }
-$database = [Microsoft.AnalysisServices.Tabular.JsonSerializer]::DeserializeDatabase(
-    [System.IO.File]::ReadAllText($modelPath),
-    $null,
-    [Microsoft.AnalysisServices.CompatibilityMode]::PowerBI
-)
-try {
-    $expectedTables = @('Complaints', 'CustomerRevenue', 'Defects')
-    $actualTables = @($database.Model.Tables | ForEach-Object { $_.Name } | Sort-Object)
-    if (($actualTables -join ',') -ne ($expectedTables -join ',') -or $database.CompatibilityLevel -ne 1600) {
-        throw 'Deserialized sample does not have the expected three tables and compatibility level 1600.'
-    }
-    $tables = @($database.Model.Tables | ForEach-Object {
-        if ($_.Columns.Count -ne 3 -or $_.Measures.Count -ne 2 -or $_.Partitions.Count -ne 1) {
-            throw "Unexpected deserialized members in table $($_.Name)"
-        }
-        if ($_.Partitions[0].Source -isnot [Microsoft.AnalysisServices.Tabular.MPartitionSource]) {
-            throw "Expected an M partition in table $($_.Name)"
-        }
-        @{
-            name = $_.Name
-            columns = @($_.Columns | ForEach-Object { @{ name = $_.Name; dataType = $_.DataType.ToString() } })
-            measures = @($_.Measures | ForEach-Object { $_.Name })
-            partitions = $_.Partitions.Count
-        }
-    })
-    $evidence = @{
-        status = 'passed'
-        checkedAtUtc = [DateTimeOffset]::UtcNow.ToString('o')
-        packageSha256 = $manifest.package.sha256
-        modelFormat = 'TMSL model.bim; no TMDL ref-table indentation applies'
-        modelSha256 = (Get-FileHash -LiteralPath $modelPath -Algorithm SHA256).Hash.ToLowerInvariant()
-        parser = 'Microsoft.AnalysisServices.Tabular.JsonSerializer.DeserializeDatabase'
-        requestedCompatibilityMode = 'PowerBI'
-        databaseName = $database.Name
-        compatibilityLevel = $database.CompatibilityLevel
-        tables = $tables
-        desktopVersion = (Get-Item -LiteralPath (Join-Path $DesktopBin 'PBIDesktop.exe')).VersionInfo.ProductVersion
-        powershellVersion = $PSVersionTable.PSVersion.ToString()
-        dotnetVersion = [System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription
-        assemblies = @($assemblyEvidence)
-        boundary = 'Read-only official TOM deserialization only. No Desktop UI, server, refresh, M/DAX execution, report render, export, licensing or native-host acceptance is established.'
-    }
-    $output = [System.IO.Path]::GetFullPath($EvidencePath)
-    [System.IO.Directory]::CreateDirectory([System.IO.Path]::GetDirectoryName($output)) | Out-Null
-    [System.IO.File]::WriteAllText($output, ($evidence | ConvertTo-Json -Depth 8) + "`n")
-    Write-Output "TOM parsed 3 tables / 9 columns / 6 measures / 3 M partitions. Evidence: $output"
-} finally {
-    $database.Dispose()
+
+$evidence = @{
+    status = 'passed'
+    checkedAtUtc = [DateTimeOffset]::UtcNow.ToString('o')
+    packageSha256 = $manifest.package.sha256
+    modelFormat = 'TMDL definition folder'
+    compatibilityLevel = 1601
+    tables = $tables
+    boundary = 'Read-only TMDL structural validation only. It does not establish native Desktop open, refresh, render, export or host acceptance.'
 }
+$output = [System.IO.Path]::GetFullPath($EvidencePath)
+[System.IO.Directory]::CreateDirectory([System.IO.Path]::GetDirectoryName($output)) | Out-Null
+[System.IO.File]::WriteAllText($output, ($evidence | ConvertTo-Json -Depth 8) + "`n")
+Write-Output "TMDL preflight validated 3 tables / 9 columns / 6 measures / 3 embedded M partitions. Evidence: $output"

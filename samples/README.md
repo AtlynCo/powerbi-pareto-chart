@@ -8,7 +8,7 @@ All names, counts, minutes, and amounts here are **invented**, sanitized example
 - `complaint-cost.csv`: eight complaint categories totaling **$10,000.00**, including a zero-contribution category.
 - `customer-revenue.csv`: 25 synthetic concentration buckets totaling **$1,000,000.00**, with long labels, an 80% boundary tie, and two zero rows.
 - `Atlyn Pareto.pbip`: project entry point referencing the report and semantic model folders.
-- `Atlyn Pareto.SemanticModel`: TMSL `model.bim` with three Import tables, embedded Power Query `#table` rows, and additive measures.
+- `Atlyn Pareto.SemanticModel`: TMDL definition folder with three Import tables, embedded Power Query `#table` rows, and additive measures.
 - `Atlyn Pareto.Report`: PBIR source with three authored pages and local custom-visual resource references.
 - `scripts\assemble-sample.mjs`: copies the authored source into ignored `artifacts\sample` and embeds the checked build output there using the real `.pbiviz` archive.
 
@@ -180,18 +180,17 @@ The source layout follows Microsoft's public documentation and current public sc
 - [PBIP projects and preview prerequisite](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-overview)
 - [Report folders, PBIR layout, and relative `byPath` references](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-report)
 - [Semantic model `definition.pbism`, TMSL/TMDL, and refresh without cache](https://learn.microsoft.com/en-us/power-bi/developer/projects/projects-dataset)
-- [TMSL model object](https://learn.microsoft.com/en-us/analysis-services/tmsl/model-object-tmsl)
 - [Public PBIR resource-layout example, pinned commit](https://github.com/ProdataSQL/FinancialModelling/blob/ec738ceb6a801f416b88b93c1dcfddbbe89426b7/Workspace/Finance-GL.Report/definition/report.json): confirms the private `CustomVisuals/<guid>/package.json` + `resources/<guid>.pbiviz.json` layout and filename-relative resource entry. No third-party visual code is copied into this sample.
 
 `$schema` URLs identify file formats for editors and validation; the sample has no web query. Do not check generated `.pbi` caches, local Desktop settings, credentials, or private report data into source control.
 
 ## Native-preflight safeguards
 
-This sample uses **TMSL `model.bim`**, not TMDL; there is no `model.tmdl` or indented `ref table` directive. The report has two independent format versions: **`definition.pbir` uses artifact version `4.0`**, while **`definition\version.json` uses report-definition version `2.0.0`**. Do not copy the artifact version into the report-definition file. `scripts\sample-versions.mjs` names the constants separately; generation validates both before copying source files and records both in `sample-manifest.json`. The inspector verifies the source/output pair and manifest agree.
+This sample uses a **TMDL `definition` folder**, not legacy TMSL `model.bim`. The report has two independent format versions: **`definition.pbir` uses artifact version `4.0`**, while **`definition\version.json` uses report-definition version `2.0.0`**. Do not copy the artifact version into the report-definition file. `scripts\sample-versions.mjs` names the constants separately; generation validates both before copying source files and records both in `sample-manifest.json`. The inspector verifies the source/output pair and manifest agree.
 
 The previous definition value `4.0.0` passed JSON schema validation. On 2026-09-10, the coordinator reported a single-variable native Desktop 2.157 A/B on another catalog visual: only changing that definition value to `2.0.0` restored pages, rendering and refresh. Pareto's sample is corrected on that evidence, but **its own native acceptance remains with the coordinator**. Schema acceptance and TOM model parsing do not establish that the report pages load.
 
-The layout validator explicitly requires both version files and other entry points before schema validation, since validating only existing files cannot detect omissions. Regressions reject a missing version file, definition versions `4.0.0`/`4.0`, mistakenly swapped artifact versions, and mixed TMSL/TMDL definitions.
+The layout validator explicitly requires both version files and the complete TMDL model definition before schema validation, since validating only existing files cannot detect omissions. Regressions reject a missing version file, definition versions `4.0.0`/`4.0`, mistakenly swapped artifact versions, and a legacy `model.bim` fallback.
 
 On a machine with Power BI Desktop already installed, its official TOM assemblies can deserialize the model without launching Desktop, connecting to a server, installing dependencies or executing the embedded M/DAX:
 
@@ -200,7 +199,7 @@ npm run sample
 npm run sample:tom
 ```
 
-The parser command writes `artifacts\sample-tom-preflight.json` with input/package hashes, exact installed assembly hashes/versions and deserialized table/member counts. It fails explicitly if the required installed assemblies are absent. `-DesktopBin` can identify another authorized Desktop installation. **TOM parsing is not native report opening, refresh, rendering, export or acceptance evidence.**
+The preflight command writes `artifacts\sample-tmdl-preflight.json` with the package hash and structural evidence for the three tables, their columns/measures, and embedded M partitions. **This structural check is not native report opening, refresh, rendering, export or acceptance evidence.**
 
 For a provisional native retry, copy the assembled sample into a new, separately named directory under `artifacts` without overwriting any sealed release. Inspect that directory with `node scripts\inspect-sample.mjs <retry-directory>`, then `npm run sample:tom -- -SampleDirectory <retry-directory> -EvidencePath <retry-directory>\tom-preflight.json`. This records layout/schema/resource and TOM evidence alongside the retry. Keep the existing package hash explicit, preserve the original sealed bundle and certification ref, and let the coordinator operate the Desktop UI. A retry sample is not a new paid/submission package.
 

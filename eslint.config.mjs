@@ -4,11 +4,24 @@ import { fileURLToPath } from "node:url";
 export default [
     powerbiVisualsConfigs.configs.recommended,
     {
-        ignores: ["node_modules/**", "dist/**", ".vscode/**", ".tmp/**"],
+        ignores: [
+            "node_modules/**",
+            "dist/**",
+            ".vscode/**",
+            ".tmp/**",
+            ".playwright/**",
+            ".build-home/**",
+            "artifacts/**",
+            "test-results/**",
+            "playwright-report/**"
+        ],
     },
     {
         languageOptions: {
-            parserOptions: { tsconfigRootDir: fileURLToPath(new URL(".", import.meta.url)) }
+            parserOptions: {
+                project: ["./tsconfig.json", "./tsconfig.tests.json"],
+                tsconfigRootDir: fileURLToPath(new URL(".", import.meta.url))
+            }
         }
     },
 ];

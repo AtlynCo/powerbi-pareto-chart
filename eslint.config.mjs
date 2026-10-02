@@ -24,4 +24,10 @@ export default [
             }
         }
     },
+    {
+        files: ["tests/**"],
+        rules: {
+            "powerbi-visuals/non-literal-fs-path": "off"
+        }
+    },
 ];

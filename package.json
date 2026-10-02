@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit && tsc --project tsconfig.tests.json",
     "build": "node scripts/build.mjs",
     "package": "node scripts/build.mjs && node scripts/inspect-package.mjs",
-    "eslint": "eslint src",
+    "eslint": "eslint .",
     "lint": "npm run eslint",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:browser": "node scripts/browser-tests.mjs",

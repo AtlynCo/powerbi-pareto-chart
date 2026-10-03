@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { unzipSync, strFromU8 } from "fflate";
@@ -9,13 +9,13 @@ test("Microsoft-linked workbook category volumes agree with an independent integ
     const url = "https://raw.githubusercontent.com/PowerBi-Projects/PowerBI-visuals/gh-pages/assets/excel/workbook/test-visuals-data.xlsx";
     const directory = path.resolve("artifacts", "microsoft-sample");
     const filename = path.join(directory, "test-visuals-data.xlsx");
-    fs.mkdirSync(directory, { recursive: true });
-    if (!fs.existsSync(filename)) {
+    mkdirSync(directory, { recursive: true });
+    if (!existsSync(filename)) {
         const response = await fetch(url);
         if (!response.ok) throw new Error(`Microsoft test workbook download failed: ${response.status}`);
-        fs.writeFileSync(filename, Buffer.from(await response.arrayBuffer()));
+        writeFileSync(filename, Buffer.from(await response.arrayBuffer()));
     }
-    const bytes = fs.readFileSync(filename);
+    const bytes = readFileSync(filename);
     const sha256 = createHash("sha256").update(bytes).digest("hex");
     expect(sha256, "Review upstream workbook changes before accepting different test input").toBe("c17157c21cb99e1946dedca29e47a8f877fd0aaeadb57d2ba6ee8bcaec2b70e1");
     const archive = unzipSync(bytes);
@@ -54,7 +54,7 @@ test("Microsoft-linked workbook category volumes agree with an independent integ
         expect(Math.abs(Number(actual[index][4].replace("%", "")) - expected[index].cumulative / Number(total) * 100)).toBeLessThanOrEqual(0.005);
     }
     await expect(page.locator(".threshold-summary")).toContainText("7 of 11 categories");
-    fs.writeFileSync(path.join(directory, "evidence.json"), JSON.stringify({
+    writeFileSync(path.join(directory, "evidence.json"), JSON.stringify({
         url, sha256, sheet: "Word Cloud", cells: "B7:C18", categoryColumn: "Produce", additiveColumn: "Volume",
         categories: data.length, total: Number(total), firstCrossing: crossing,
         scope: "Actual packaged runtime with host mock; not native workbook import or Desktop validation.",

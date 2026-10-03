@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { randomBytes, createHash } from "node:crypto";
+import { normalizePackage } from "./normalize-package.mjs";
 
 const home = path.resolve(".build-home");
 const certs = path.join(home, "pbiviz-certs");
@@ -34,6 +35,7 @@ const args = ["package", "--all-locales", "--no-stats", ...process.argv.slice(2)
 run(process.execPath, [path.resolve("node_modules", "powerbi-visuals-tools", "bin", "pbiviz.js"), ...args]);
 const { visual } = JSON.parse(fs.readFileSync("pbiviz.json", "utf8"));
 const filename = path.join("dist", `${visual.guid}.${visual.version}.pbiviz`);
+await normalizePackage(filename);
 fs.mkdirSync("artifacts", { recursive: true });
 fs.writeFileSync(path.join("artifacts", "build-report.json"), JSON.stringify({
     completedAt: new Date().toISOString(),

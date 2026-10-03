@@ -50,6 +50,10 @@ The official tools' locale-loader path can fail with `Unexpected token export` w
 
 All available project locales—**en-US and fr-FR**—are bundled in the visual for offline use, without fetching translations at runtime. “All locales” means all locale resources supplied by this project, not translations for every Power BI language. Confirm both locale payloads in the inspected archive.
 
+### Deterministic package normalization
+
+The packaging wrapper automatically normalizes the output `.pbiviz` archive with pinned UTC timestamps (`1980-01-01T00:00:00.000Z`), sorted entries, and uniform DOS/UNIX permissions. This guarantees byte-for-byte identical archives across repeated builds and opposite timezones (`npm run audit:reproducible`), while preserving exact inner member bytes, manifest configuration, and parity with native `.pbix` embeds.
+
 The `.pbiviz` is written to ignored `dist`. Inspection selects the current GUID/version filename, never an arbitrary old file in that directory. The stable GUID is `atlynPareto18722664651549C392ABF6B1EBA46945` and the visual manifest version is `1.1.2.0`.
 
 The **SDK dependency** is `powerbi-visuals-api@5.11.1`; its exposed **host API** is 5.11, normalized as `5.11.0` in `pbiviz.json`, the generated plugin, and packaged payload. These version numbers serve different purposes. Keep the SDK package pinned at `5.11.1` while checking the artifact's API field against `5.11.0`; normalization is not a dependency downgrade.

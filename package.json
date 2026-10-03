@@ -29,6 +29,7 @@
     "audit:dependencies": "npm audit --audit-level=moderate",
     "audit:certification": "node scripts/build.mjs --certification-audit && node scripts/inspect-package.mjs && node scripts/certification-audit.mjs",
     "audit:licenses": "node scripts/license-audit.mjs",
+    "audit:reproducible": "node scripts/reproducibility-audit.mjs",
     "verify": "npm run typecheck && npm run lint && npm test && npm run audit:certification && npm run test:browser && npm run audit:licenses && npm run audit:dependencies",
     "postinstall": "node scripts/patch-loader.mjs"
   },

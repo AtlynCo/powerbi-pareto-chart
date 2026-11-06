@@ -19,7 +19,19 @@ Do not globally install `pbiviz`; use the locked local tools. Do not change depe
 
 The visual includes an offline third-party notices panel. After deliberate dependency changes, run `node scripts\generate-notices.mjs` and review the generated `src\third-party-notices.json`; the package build checks it against installed license texts. Package inspection checks that permission text and the vendored Globalize attribution survive bundling.
 
-The lockfile includes dependency overrides for `qs` **6.16.0** and `sockjs`'s `uuid` **11.1.1** to address development-tooling advisories. The coordinator inspected the latter's CommonJS `require` / v4 API compatibility. Preserve the locked graph and rerun the advisory audit for the release: an override or a previously clean advisory result is not proof of continued security or runtime/host compatibility.
+The lockfile includes dependency overrides for `qs` **6.16.2**, `minimatch` **11.0.1** and `sockjs`'s `uuid` **11.1.1** to address development-tooling advisories. The coordinator inspected the latter's CommonJS `require` / v4 API compatibility. Preserve the locked graph and rerun the advisory audit for the release: an override or a previously clean advisory result is not proof of continued security or runtime/host compatibility.
+
+### Provisional dependency remediation (2026-11-04)
+
+The current lockfile refresh updates 19 transitive package entries within their existing declared ranges, without changing direct dependencies or adding overrides. These include the MCP tooling SDK, HTTP development-server dependencies, brace expansion, URI parsing, selector parsing, source maps and Zod. Validation uses the installed **Node 22.23.2 / npm 10.9.8** baseline through a process-local PATH; it does not switch the shared machine's Node installation.
+
+This is **not a clean advisory attestation**. The preserved audit identifies vulnerable `minimatch` 3.x/10.x and the existing `qs` 6.16.0 override. The cached upstream TypeScript ESLint parser still declares `minimatch ^10.2.2`, whereas that audit requires 11.0.1 or later. Some Express/body-parser parents declare `qs ~6.15.1`; forcing a newer minor outside those ranges requires separate review.
+
+### Approved build-tool exception (2026-11-06)
+
+The owner approved promoting the isolated offline trial: overrides `minimatch` **11.0.1** and `qs` **6.16.2** (out-of-range for some development-only parents) are now in `package.json` and the lockfile. Both are build/development-only; the offline trial passed typecheck, lint, unit, package and browser checks, and its certification-mode package payload is byte-identical to the natively validated 1.1.2.0 candidate. This is an owner-approved exception, not a fresh advisory attestation.
+
+The configured advisory endpoint is shared across visuals. Honor its HTTP 429 `Retry-After` before another audit, do not switch registries to bypass it, and do not describe successful local tests or offline resolution as a fresh security-audit pass. Preserve the previous candidate and evidence separately; an updated lockfile or rebuilt archive requires its own source-state and artifact hashes.
 
 ```powershell
 npm ci

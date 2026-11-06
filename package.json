@@ -33,10 +33,11 @@
     "postinstall": "node scripts/patch-loader.mjs"
   },
   "overrides": {
-    "qs": "6.16.0",
+    "qs": "6.16.2",
     "sockjs": {
       "uuid": "11.1.1"
-    }
+    },
+    "minimatch": "11.0.1"
   },
   "dependencies": {
     "powerbi-visuals-api": "5.11.1",
